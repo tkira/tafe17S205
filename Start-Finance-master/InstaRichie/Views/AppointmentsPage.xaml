@@ -10,17 +10,19 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="using:StartFinance.ViewModels"
+    Loaded="Page_Loaded"
     mc:Ignorable="d">
-    <!-- Loaded="Page_Loaded"  -->
 
     <Page.Resources>
-        <DataTemplate x:Key="TransListView">
+
+        <DataTemplate x:Key="AppointmentListView">
             <Grid>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="{Binding ID}" Padding="0,0,15,0"/>
-                    <TextBlock Text="{Binding AccountName}" Padding="0,0,15,0"/>
-                    <TextBlock Text="{Binding InitialAmount}" Padding="0,0,15,0"/>
-                    <TextBlock Text="{Binding OverDraft}"/>
+                    <TextBlock Text="{Binding AppointmentID}" Padding="0,0,15,0"/>
+                    <TextBlock Text="{Binding EventName}" Padding="0,0,15,0"/>
+                    <TextBlock Text="{Binding EventDate}" Padding="0,0,15,0"/>
+                    <TextBlock Text="{Binding StartTime}" Padding="0,0,15,0"/>
+                    <TextBlock Text="{Binding EndTime}"/>
                 </StackPanel>
             </Grid>
         </DataTemplate>
@@ -32,81 +34,78 @@
 
     <RelativePanel Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-            <VisualStateManager.VisualStateGroups>
-                <VisualStateGroup x:Name="AdaptiveVisualStateGroup">
-                    <VisualState x:Name="VisualStateNarrow">
-                        <VisualState.StateTriggers>
-                            <AdaptiveTrigger MinWindowWidth="{StaticResource NarrowMinWidth}" />
-                        </VisualState.StateTriggers>
-                        <VisualState.Setters>
-                            <!--  TODO: change properties for narrow view  -->
-                        </VisualState.Setters>
-                    </VisualState>
-                    <VisualState x:Name="VisualStateNormal">
-                        <VisualState.StateTriggers>
-                            <AdaptiveTrigger MinWindowWidth="{StaticResource NormalMinWidth}" />
-                        </VisualState.StateTriggers>
-                        <VisualState.Setters>
-                            <!--  TODO: change properties for normal view  -->
-                        </VisualState.Setters>
-                    </VisualState>
-                    <VisualState x:Name="VisualStateWide">
-                        <VisualState.StateTriggers>
-                            <AdaptiveTrigger MinWindowWidth="{StaticResource WideMinWidth}" />
-                        </VisualState.StateTriggers>
-                        <VisualState.Setters>
-                            <!--  TODO: change properties for wide view  -->
-                        </VisualState.Setters>
-                    </VisualState>
-                </VisualStateGroup>
-            </VisualStateManager.VisualStateGroups>
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="AdaptiveVisualStateGroup">
+                <VisualState x:Name="VisualStateNarrow">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="{StaticResource NarrowMinWidth}" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <!--  TODO: change properties for narrow view  -->
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="VisualStateNormal">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="{StaticResource NormalMinWidth}" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <!--  TODO: change properties for normal view  -->
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="VisualStateWide">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="{StaticResource WideMinWidth}" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <!--  TODO: change properties for wide view  -->
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
 
-            <controls:PageHeader x:Name="pageHeader" RelativePanel.AlignLeftWithPanel="True"
+        <controls:PageHeader x:Name="pageHeader" RelativePanel.AlignLeftWithPanel="True"
 			RelativePanel.AlignRightWithPanel="True"
 			RelativePanel.AlignTopWithPanel="True" Text="Add/Remove Appointments">
 
-                <!--  secondary commands  -->
-                <controls:PageHeader.SecondaryCommands>
-                    <AppBarButton Click="{x:Bind ViewModel.GotoSettings}" Label="Settings" />
-                    <AppBarButton Click="{x:Bind ViewModel.GotoPrivacy}" Label="Privacy" />
-                    <AppBarButton Click="{x:Bind ViewModel.GotoAbout}" Label="About" />
-                </controls:PageHeader.SecondaryCommands>
-            </controls:PageHeader>
+            <!--  secondary commands  -->
+            <controls:PageHeader.SecondaryCommands>
+                <AppBarButton Click="{x:Bind ViewModel.GotoSettings}" Label="Settings" />
+                <AppBarButton Click="{x:Bind ViewModel.GotoPrivacy}" Label="Privacy" />
+                <AppBarButton Click="{x:Bind ViewModel.GotoAbout}" Label="About" />
+            </controls:PageHeader.SecondaryCommands>
+        </controls:PageHeader>
 
-            <controls:PageHeader x:Name="pageFooter" RelativePanel.AlignLeftWithPanel="True"
+        <controls:PageHeader x:Name="pageFooter" RelativePanel.AlignLeftWithPanel="True"
 			RelativePanel.AlignRightWithPanel="True"
 			RelativePanel.AlignBottomWithPanel="True">
 
-                <!--  secondary commands  -->
-                <controls:PageHeader.PrimaryCommands>
-                    <AppBarButton Icon="Add" Label="Add Appointment" Click="AppBarButton_Click" />
-                    <AppBarButton Icon="Delete" Label="Delete Appointment" Click="DeleteItem_Click" />
-                </controls:PageHeader.PrimaryCommands>
-            </controls:PageHeader>
+            <!--  secondary commands  -->
+            <controls:PageHeader.PrimaryCommands>
+                <AppBarButton Icon="Add" Label="Add Appointment" Click="AppBarButton_Click" />
+                <AppBarButton Icon="Delete" Label="Delete Appointment" Click="DeleteItem_Click" />
+            </controls:PageHeader.PrimaryCommands>
+        </controls:PageHeader>
 
 
         <Pivot>
             <RelativePanel.Below>pageHeader</RelativePanel.Below>
             <RelativePanel.Above>pageFooter</RelativePanel.Above>
             <PivotItem Header="Appointments">
-                <Grid>
+                <Grid Margin="0,3,0,248">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="185"/>
-                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="245"/>
+                        <RowDefinition Height="0*"/>
                     </Grid.RowDefinitions>
                     <StackPanel x:Name="PageStart" Grid.Row="0" VerticalAlignment="Top"
                         HorizontalAlignment="Stretch"
-                        Orientation="Vertical" Margin="10,5,10,0">
+                        Orientation="Vertical" Margin="10,5,0,0" Height="240">
                         <TextBox x:Name="eventName" Header="Event Name" PlaceholderText="Event" TextWrapping="Wrap"/>
-                        <TextBox x:Name="MoneyIn" Header="Initial Amount" PlaceholderText="100.00" InputScope="Number" TextWrapping="Wrap"/>
-                        <ToggleSwitch x:Name="overdraft" Header="Enable Overdraft"
-                                      HorizontalAlignment="Stretch" ToolTipService.Placement="Mouse"
-                                      ToolTipService.ToolTip="Mostly used for Credit Cards"
-                                      VerticalAlignment="Stretch"/>
-
+                        <CalendarDatePicker x:Name="eventDate" HorizontalAlignment="Left" Header="Event Date"/>
+                        <TextBox x:Name="startTime" Header="Start Time" PlaceholderText="Time (hh:mm)" TextWrapping="Wrap"/>
+                        <TextBox x:Name="endTime" Header="End Time" PlaceholderText="Time (hh:mm)" TextWrapping="Wrap"/>
                     </StackPanel>
-                    <ListView x:Name="AppointmentList" Grid.Row="1" ItemTemplate="{StaticResource TransListView}"
-                              HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <ListView x:Name="AppointmentList" Grid.Row="3" ItemTemplate="{StaticResource AppointmentListView}"
+                              HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,-218">
                         <RelativePanel.Below>PageStart</RelativePanel.Below>
                     </ListView>
                 </Grid>

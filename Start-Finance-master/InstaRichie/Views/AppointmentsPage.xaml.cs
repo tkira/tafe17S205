@@ -47,20 +47,78 @@ namespace StartFinance.Views
             AppointmentList.ItemsSource = query.ToList();
         }
 
+        // Displays the data when navigation between pages
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            Results();
+        }
+
+
         private async void AppBarButton_Click(object sender, RoutedEventArgs e)
         {
-
+            try
+            {
+                if (eventName.Text.ToString() == "")
+                {
+                    MessageDialog dialog = new MessageDialog("Event Name not Entered", "Oops..!");
+                    await dialog.ShowAsync();
+                }
+                else if (startTime.Text.ToString() == "")
+                {
+                    MessageDialog dialog = new MessageDialog("Start Time not Entered", "Oops..!");
+                    await dialog.ShowAsync();
+                }
+                else if (endTime.Text.ToString() == "")
+                {
+                    MessageDialog dialog = new MessageDialog("End Time not Entered", "Oops..!");
+                    await dialog.ShowAsync();
+                }
+                else if (endTime.Text.ToString() == startTime.Text.ToString())
+                {
+                    MessageDialog dialog = new MessageDialog("Time are same", "Oops..!");
+                    await dialog.ShowAsync();
+                }
+                else
+                {
+                    string CDay = eventDate.Date.Value.Day.ToString();
+                    string CMonth = eventDate.Date.Value.Month.ToString();
+                    string CYear = eventDate.Date.Value.Year.ToString();
+                    string EventDateString = "" + CMonth + "/" + CDay + "/" + CYear;
+                    // inserts the data
+                    conn.Insert(new Appointments()
+                    {
+                        EventName = eventName.Text,
+                        EventDate = EventDateString,
+                        StartTime = startTime.Text,
+                        EndTime = endTime.Text
+                    });
+                    Results();
+                }
+            }
+            catch (Exception ex)
+            {   // Exception to display when amount is invalid or not numbers
+                if (ex is FormatException)
+                {
+                    MessageDialog dialog = new MessageDialog("You forgot to enter the Event or entered an invalid data", "Oops..!");
+                    await dialog.ShowAsync();
+                }   // Exception handling when SQLite contraints are violated
+                else if (ex is SQLiteException)
+                {
+                    MessageDialog dialog = new MessageDialog("Event name already exist, Try Different Name", "Oops..!");
+                    await dialog.ShowAsync();
+                }
+                else
+                {
+                    /// no idea
+                }
+            }
         }
+
 
         private async void DeleteItem_Click(object sender, RoutedEventArgs e)
         {
-
         }
-    }
 
-    // Displays the data when navigation between pages
-    //private void Page_Loaded(object sender, RoutedEventArgs e)
-   // {
-    //    Results();
-   // }
+
+    }
 }
