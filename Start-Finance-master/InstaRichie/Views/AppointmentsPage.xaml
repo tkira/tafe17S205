@@ -81,8 +81,10 @@
 
             <!--  secondary commands  -->
             <controls:PageHeader.PrimaryCommands>
-                <AppBarButton Icon="Add" Label="Add Appointment" Click="AppBarButton_Click" />
-                <AppBarButton Icon="Delete" Label="Delete Appointment" Click="DeleteItem_Click" />
+                <AppBarButton x:Name="addbtn" Icon="Add" Label="Add Appointment" Click="AppBarButton_Click" />
+                <AppBarButton x:Name="editbtn" Icon="Edit" Label="Edit Appointment" Click="EditButton_Click" />
+                <AppBarButton x:Name="deletebtn" Icon="Delete" Label="Delete Appointment" Click="DeleteItem_Click" />
+                <AppBarButton x:Name="savebtn" Icon="Accept" Label="Save Appointment" Click="SaveButton_Click" />
             </controls:PageHeader.PrimaryCommands>
         </controls:PageHeader>
 
@@ -100,9 +102,9 @@
                         HorizontalAlignment="Stretch"
                         Orientation="Vertical" Margin="10,5,0,0" Height="240">
                         <TextBox x:Name="eventName" Header="Event Name" PlaceholderText="Event" TextWrapping="Wrap"/>
-                        <CalendarDatePicker x:Name="eventDate" HorizontalAlignment="Left" Header="Event Date"/>
-                        <TextBox x:Name="startTime" Header="Start Time" PlaceholderText="Time (hh:mm)" TextWrapping="Wrap"/>
-                        <TextBox x:Name="endTime" Header="End Time" PlaceholderText="Time (hh:mm)" TextWrapping="Wrap"/>
+                        <DatePicker x:Name="eventDate" HorizontalAlignment="Left" Header="Event Date"/>
+                        <TimePicker x:Name="startTime" HorizontalAlignment="Left" VerticalAlignment="Stretch" Header="Start Time" ClockIdentifier="12HourClock"/>
+                        <TimePicker x:Name="endTime" HorizontalAlignment="Left" VerticalAlignment="Stretch" Header="End Time" ClockIdentifier="12HourClock"/>
                     </StackPanel>
                     <ListView x:Name="AppointmentList" Grid.Row="3" ItemTemplate="{StaticResource AppointmentListView}"
                               HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,-218">
