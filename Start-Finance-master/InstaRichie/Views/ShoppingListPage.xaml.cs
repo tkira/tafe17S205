@@ -42,12 +42,12 @@ namespace StartFinance.Views
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class AssetsPage : Page
+    public sealed partial class ShoppingListPage : Page
     {
         SQLiteConnection conn; // adding an SQLite connection
         string path = Path.Combine(Windows.Storage.ApplicationData.Current.LocalFolder.Path, "Findata.sqlite");
 
-        public AssetsPage()
+        public ShoppingListPage()
         {
             this.InitializeComponent();
             NavigationCacheMode = Windows.UI.Xaml.Navigation.NavigationCacheMode.Enabled;
@@ -59,28 +59,32 @@ namespace StartFinance.Views
         public void Results()
         {
             // Creating table
-            conn.CreateTable<Assets>();
+            conn.CreateTable<ShoppingList>();
 
             /// Refresh Data
-            var query = conn.Table<Assets>();
-            AssetListView.ItemsSource = query.ToList();
+            var query = conn.Table<ShoppingList>();
+            
+            ShoppingListView.ItemsSource = query.ToList();
         }
 
         private async void AddData(object sender, RoutedEventArgs e)
         {
             try
             {
-                if (AssetNameText.Text.ToString() == "")
+                if (ShoppingItemIDText.Text.ToString() == ""|| ShoppingDateText.Text.ToString() == ""|| NameOfItemText.Text.ToString() == ""||
+                    PriceQuotedText.Text.ToString() == "")
                 {
-                    MessageDialog dialog = new MessageDialog("No Account Name entered", "Oops..!");
+                    MessageDialog dialog = new MessageDialog("All fields must be entered", "Oops..!");
                     await dialog.ShowAsync();
                 }
                 else
                 {
-                    conn.Insert(new Assets()
+                    conn.Insert(new ShoppingList()
                     {
-                        AssetName = AssetNameText.Text,
-                        AssetValue = Convert.ToDouble(AssetValue.Text)
+                        ShoppingItemID = ShoppingItemIDText.Text.ToString(),
+                        ShoppingDate = ShoppingDateText.Text.ToString(),
+                        NameOfItem = NameOfItemText.Text.ToString(),
+                        PriceQuoted = Convert.ToDouble(PriceQuotedText.Text.ToString())
                     });
                     Results();
                 }
@@ -89,12 +93,12 @@ namespace StartFinance.Views
             {
                 if (ex is FormatException)
                 {
-                    MessageDialog dialog = new MessageDialog("You forgot to enter the Value or entered an invalid data", "Oops..!");
+                    MessageDialog dialog = new MessageDialog("You forgot to enter the Price Quoted or entered an invalid data", "Oops..!");
                     await dialog.ShowAsync();
                 }
                 else if (ex is SQLiteException)
                 {
-                    MessageDialog dialog = new MessageDialog("A Similar Asset Nane already exists, Try a different name", "Oops..!");
+                    MessageDialog dialog = new MessageDialog("A Similar ShoppingItemID already exists, Try a different td", "Oops..!");
                     await dialog.ShowAsync();
                 }
             }
@@ -102,8 +106,10 @@ namespace StartFinance.Views
 
         private async void ClearFileds_Click(object sender, RoutedEventArgs e)
         {
-            AssetNameText.Text = string.Empty;
-            AssetValue.Text = string.Empty;
+            ShoppingItemIDText.Text = string.Empty;
+            ShoppingDateText.Text = string.Empty;
+            NameOfItemText.Text = string.Empty;
+            PriceQuotedText.Text = string.Empty;
 
             MessageDialog ClearDialog = new MessageDialog("Cleared", "information");
             await ClearDialog.ShowAsync();
@@ -118,18 +124,18 @@ namespace StartFinance.Views
         {
             try
             {
-                string AccSelection = ((Assets)AssetListView.SelectedItem).AssetName;
-                if (AccSelection == "")
+                string listSeleccted = ((ShoppingList)ShoppingListView.SelectedItem).ShoppingItemID;
+                if (listSeleccted == "")
                 {
-                    MessageDialog dialog = new MessageDialog("Not selected the Item", "Oops..!");
+                    MessageDialog dialog = new MessageDialog("Not selected the List", "Oops..!");
                     await dialog.ShowAsync();
                 }
                 else
                 {
-                    conn.CreateTable<Assets>();
-                    var query1 = conn.Table<Assets>();
-                    var query3 = conn.Query<Assets>("DELETE FROM Assets WHERE AssetName ='" + AccSelection + "'");
-                    AssetListView.ItemsSource = query1.ToList();
+                    conn.CreateTable<ShoppingList>();
+                    var query1 = conn.Table<ShoppingList>();
+                    var query3 = conn.Query<ShoppingList>("DELETE FROM ShoppingList WHERE ShoppingItemID ='" + listSeleccted + "'");
+                    ShoppingListView.ItemsSource = query1.ToList();
                 }
             }
             catch (NullReferenceException)

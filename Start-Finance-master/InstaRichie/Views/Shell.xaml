@@ -63,7 +63,7 @@
             </Controls:HamburgerButtonInfo>
 
             <!--  Assets button  -->
-            <Controls:HamburgerButtonInfo ClearHistory="True" PageType="views:AssetsPage" 
+            <Controls:HamburgerButtonInfo ClearHistory="True" PageType="views:ShoppingListPage" 
                                           AutomationProperties.Name="Jerry"
                                           >
                 <StackPanel Orientation="Horizontal">

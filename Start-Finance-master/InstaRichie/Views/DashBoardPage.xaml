@@ -34,11 +34,13 @@
     </Page.DataContext>
 
     <Page.Resources>
-        <DataTemplate x:Key="AssetListDataViews">
+        <DataTemplate x:Key="ShoppingListDataViews">
             <Grid>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="{Binding AssetName}" Style="{ThemeResource SubheaderTextBlockStyle}" Padding="0,0,15,0"/>
-                    <TextBlock Text="{Binding AssetValue}" Style="{ThemeResource SubheaderTextBlockStyle}"/>
+                    <TextBlock Text="{Binding ShoppingItemID}" Padding="0,0,15,0"/>
+                    <TextBlock Text="{Binding ShoppingDate}" Padding="0,0,15,0"/>
+                    <TextBlock Text="{Binding NameOfItem}" Padding="0,0,15,0"/>
+                    <TextBlock Text="{Binding PriceQuoted}" Padding="0,0,15,0"/>
                 </StackPanel>
             </Grid>
         </DataTemplate>
@@ -189,11 +191,11 @@
 
                         <Grid x:Name="WishList" Grid.Row="1" Grid.Column="1">
                             <Pivot>
-                                <PivotItem Header="Assets List">
+                                <PivotItem Header="Shopping List">
                                     <Grid>
-                                        <ListView x:Name="Assetme" HorizontalAlignment="Stretch"
+                                        <ListView x:Name="ShoppingListView" HorizontalAlignment="Stretch"
                                       VerticalAlignment="Stretch" BorderBrush="White" BorderThickness="2"
-                                      ItemTemplate="{StaticResource AssetListDataViews}">
+                                      ItemTemplate="{StaticResource ShoppingListDataViews}">
                                         </ListView>
                                     </Grid>
                                 </PivotItem>
