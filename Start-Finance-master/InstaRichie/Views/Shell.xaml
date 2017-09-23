@@ -62,18 +62,6 @@
                 </StackPanel>
             </Controls:HamburgerButtonInfo>
 
-            <!--  Assets button  -->
-            <Controls:HamburgerButtonInfo ClearHistory="True" PageType="views:ShoppingListPage" 
-                                          AutomationProperties.Name="Jerry"
-                                          >
-                <StackPanel Orientation="Horizontal">
-                    <SymbolIcon Width="48" Height="48"
-                		Symbol="StopSlideShow" />
-                    <TextBlock Margin="12,0,0,0" VerticalAlignment="Center"
-                               Text="Assets" />
-                </StackPanel>
-            </Controls:HamburgerButtonInfo>
-
             <!--  Accounts button  -->
             <Controls:HamburgerButtonInfo ClearHistory="True" PageType="views:AccountsPage" 
                                           AutomationProperties.Name="Jerry"
@@ -96,6 +84,18 @@
                 		Symbol="Bullets" />
                     <TextBlock Margin="12,0,0,0" VerticalAlignment="Center"
                                Text="WishList" />
+                </StackPanel>
+            </Controls:HamburgerButtonInfo>
+
+            <!--  Assets button  -->
+            <Controls:HamburgerButtonInfo ClearHistory="True" PageType="views:ShoppingListPage" 
+                                          AutomationProperties.Name="Jerry"
+                                          >
+                <StackPanel Orientation="Horizontal">
+                    <SymbolIcon Width="48" Height="48"
+                		Symbol="Shop" />
+                    <TextBlock Margin="12,0,0,0" VerticalAlignment="Center"
+                               Text="ShopppingList" />
                 </StackPanel>
             </Controls:HamburgerButtonInfo>
         </Controls:HamburgerMenu.PrimaryButtons>

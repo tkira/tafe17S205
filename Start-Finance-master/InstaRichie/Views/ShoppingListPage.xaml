@@ -100,6 +100,8 @@
             <controls:PageHeader.PrimaryCommands>
                 <AppBarButton Icon="Add" Label="Add Asset" Click="AddData" />
                 <AppBarButton Icon="Delete" Label="Delete Asset" Click="DeleteAccout_Click" />
+                <AppBarButton x:Name="editbtn" Icon="Edit" Label="Edit Asset" Click="EditButton_Click" />
+                <AppBarButton x:Name="savebtn" Icon="Accept" Label="Save Asset" Click="SaveButton_Click" />
             </controls:PageHeader.PrimaryCommands>
 
         </controls:PageHeader>

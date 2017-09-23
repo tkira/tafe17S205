@@ -50,6 +50,7 @@ namespace StartFinance.Views
         public ShoppingListPage()
         {
             this.InitializeComponent();
+            savebtn.Visibility = Visibility.Collapsed;
             NavigationCacheMode = Windows.UI.Xaml.Navigation.NavigationCacheMode.Enabled;
             /// Initializing a database
             conn = new SQLite.Net.SQLiteConnection(new SQLite.Net.Platform.WinRT.SQLitePlatformWinRT(), path);
@@ -144,5 +145,38 @@ namespace StartFinance.Views
                 await dialog.ShowAsync();
             }
         }
+
+        int selected;
+
+    private async void EditButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (ShoppingListView.SelectedIndex == -1)
+        {
+            MessageDialog dialog = new MessageDialog("No selected event", "Oops..!");
+            await dialog.ShowAsync();
+        }
+        else
+        {
+            selected = ((ShoppingList)ShoppingListView.SelectedItem).ID; //Store ID to be able to update data.
+            ShoppingItemIDText.Text = ((ShoppingList)ShoppingListView.SelectedItem).ShoppingItemID;
+            ShoppingDateText.Text = ((ShoppingList)ShoppingListView.SelectedItem).ShoppingDate;
+            NameOfItemText.Text = ((ShoppingList)ShoppingListView.SelectedItem).ShoppingItemID;
+            PriceQuotedText.Text = Convert.ToString(((ShoppingList)ShoppingListView.SelectedItem).PriceQuoted);
+
+            editbtn.Visibility = Visibility.Collapsed;
+            savebtn.Visibility = Visibility.Visible;
+        }
     }
+
+    private void SaveButton_Click(object sender, RoutedEventArgs e)
+    {
+            Double priceQ = Convert.ToDouble(PriceQuotedText.Text.ToString());
+        conn.Query<ShoppingList>("UPDATE ShoppingList SET ShoppingItemID = '" + ShoppingItemIDText.Text + "', ShoppingDate = '" + ShoppingDateText.Text + "', NameOfItem = '" + NameOfItemText.Text + "', PriceQuoted = '" + priceQ + "' WHERE ID = '" + selected  + "'");
+
+        editbtn.Visibility = Visibility.Visible;
+        savebtn.Visibility = Visibility.Collapsed;
+
+        Results();
+    }
+}
 }
