@@ -1,0 +1,129 @@
+﻿<Page
+    x:Class="StartFinance.Views.PersonalInfoPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Behaviors="using:Template10.Behaviors"
+    xmlns:Core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:Interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:controls="using:Template10.Controls"
+    xmlns:local="using:StartFinance.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:StartFinance.ViewModels"
+    mc:Ignorable="d" Width="437.244">
+
+    <Page.Resources>
+        <DataTemplate x:Key="PersonalInfoView">
+            <Grid>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding PersonalID}" Padding="0,0,15,0"/>
+                    <TextBlock Text="{Binding FirstName}" Padding="0,0,15,0"/>
+                    <TextBlock Text="{Binding LastName}" Padding="0,0,15,0"/>
+                    <TextBlock Text="{Binding Email}" Padding="0,0,15,0"/>
+                    <TextBlock Text="{Binding Phone}"/>
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+    </Page.Resources>
+
+    <Page.DataContext>
+        <vm:MainPageViewModel x:Name="ViewModel" />
+    </Page.DataContext>
+
+    <RelativePanel Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="AdaptiveVisualStateGroup">
+                <VisualState x:Name="VisualStateNarrow">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="{StaticResource NarrowMinWidth}" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <!--  TODO: change properties for narrow view  -->
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="VisualStateNormal">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="{StaticResource NormalMinWidth}" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <!--  TODO: change properties for normal view  -->
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="VisualStateWide">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="{StaticResource WideMinWidth}" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+        <controls:PageHeader x:Name="pageHeader" RelativePanel.AlignLeftWithPanel="True"
+			RelativePanel.AlignRightWithPanel="True"
+			RelativePanel.AlignTopWithPanel="True" Text="Personal Information">
+
+            <!--  secondary commands  -->
+            <controls:PageHeader.SecondaryCommands>
+                <AppBarButton Click="{x:Bind ViewModel.GotoSettings}" Label="Settings" />
+                <AppBarButton Click="{x:Bind ViewModel.GotoPrivacy}" Label="Privacy" />
+                <AppBarButton Click="{x:Bind ViewModel.GotoAbout}" Label="About" />
+            </controls:PageHeader.SecondaryCommands>
+        </controls:PageHeader>
+
+        <controls:PageHeader x:Name="pageFooter" RelativePanel.AlignLeftWithPanel="True"
+			RelativePanel.AlignRightWithPanel="True"
+			RelativePanel.AlignBottomWithPanel="True">
+
+            <!--  secondary commands  -->
+            <controls:PageHeader.PrimaryCommands>
+                <AppBarButton Icon="Add" Label="Add Info" Click="AppBarButton_Click"/>
+                <AppBarButton Icon="Edit" Label="Edit Info" Click="EditItem_Click"/>
+                <AppBarButton Icon="Delete" Label="Delete Info" Click="DeleteItem_Click"/>
+            </controls:PageHeader.PrimaryCommands>
+        </controls:PageHeader>
+
+
+        <Pivot Margin="0,0,0.2,0">
+            <RelativePanel.Below>pageHeader</RelativePanel.Below>
+            <RelativePanel.Above>pageFooter</RelativePanel.Above>
+            <PivotItem Header="Information">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="185"/>
+                        <RowDefinition Height="189*"/>
+                        <RowDefinition Height="250*"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel x:Name="PageStart" Grid.Row="0" VerticalAlignment="Top"
+                        HorizontalAlignment="Stretch"
+                        Orientation="Vertical" Margin="10,5,10,0" Grid.RowSpan="2">
+                        <StackPanel x:Name="fullName" Orientation="Horizontal">
+                            <TextBox x:Name="fName" Header="First Name" PlaceholderText="John" TextWrapping="Wrap" />
+                            <TextBox x:Name="lName" Header="Last Name" PlaceholderText="Smith" TextWrapping="Wrap" />
+                        </StackPanel>
+                        <StackPanel x:Name="details" Orientation="Horizontal">
+                            <TextBox x:Name="email" Header="Email Address" InputScope="EmailNameOrAddress" PlaceholderText="jsmith@gmail.com" TextWrapping="Wrap"/>
+                            <TextBox x:Name="phone" Header="Phone Number" InputScope="TelephoneNumber" PlaceholderText="0400111222" TextWrapping="Wrap"/>
+                        </StackPanel>
+                        <StackPanel x:Name="gender" Orientation="Horizontal">
+                            <TextBlock Text="Gender" />
+                            <RadioButton x:Name="RadBtnM" Content="Male" Tag="male" GroupName="gen" Width="80" IsChecked="True" MinWidth="80" Checked="RadBtnM_Checked" />
+                            <RadioButton x:Name="radBtnF" Content="Female" Tag="female" GroupName="gen" Width="80" MinWidth="80" Checked="RadBtnF_Checked" />
+                        </StackPanel>
+                        <StackPanel x:Name="birth" Orientation="Horizontal">
+                            <CalendarDatePicker x:Name="dob" Header="DOB"/>
+                        </StackPanel>
+                        
+                    </StackPanel>
+                    <ListView x:Name="InfoList" ItemTemplate="{StaticResource PersonalInfoView}"
+                              HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="0,0,0,10" Grid.Row="1" Height="200" Grid.RowSpan="2">
+                        <RelativePanel.Below>PageStart</RelativePanel.Below>
+                    </ListView>
+                </Grid>
+            </PivotItem>
+        </Pivot>
+
+    </RelativePanel>
+</Page>
