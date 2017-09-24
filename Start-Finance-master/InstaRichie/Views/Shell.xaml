@@ -99,6 +99,7 @@
                 </StackPanel>
             </Controls:HamburgerButtonInfo>
 
+
             <!--  Appointment button  -->
             <Controls:HamburgerButtonInfo ClearHistory="True" PageType="views:AppointmentsPage" 
                                           AutomationProperties.Name="Jerry"
@@ -108,6 +109,17 @@
                 		Symbol="Calendar" />
                     <TextBlock Margin="12,0,0,0" VerticalAlignment="Center"
                                Text="Appointments" />
+                </StackPanel>
+            </Controls:HamburgerButtonInfo>
+            <!--  Assets button  -->
+            <Controls:HamburgerButtonInfo ClearHistory="True" PageType="views:ShoppingListPage" 
+                                          AutomationProperties.Name="Jerry"
+                                          >
+                <StackPanel Orientation="Horizontal">
+                    <SymbolIcon Width="48" Height="48"
+                		Symbol="Shop" />
+                    <TextBlock Margin="12,0,0,0" VerticalAlignment="Center"
+                               Text="ShopppingList" />
                 </StackPanel>
             </Controls:HamburgerButtonInfo>
         </Controls:HamburgerMenu.PrimaryButtons>

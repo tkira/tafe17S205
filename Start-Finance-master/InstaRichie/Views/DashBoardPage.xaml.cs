@@ -62,7 +62,8 @@ namespace StartFinance.Views
         {
             Calculations nnn = new Calculations();
             AccountTotal.Text = "Accounts: " + nnn.AccountTotal().ToString();
-            Assets.Text = "Assets: " + nnn.AssetCalculation().ToString();
+            // Assets.Text = "Assets: " + nnn.AssetCalculation().ToString();
+            Assets.Text = "0";
             CreditRatio.Text = "Credit Rating: " + nnn.CreditRatio().ToString();
             Debts.Text = "Debts: " + nnn.DebtCalculation().ToString();
             FullTotal.Text = "Total : " + nnn.FullValuation().ToString();
@@ -71,9 +72,9 @@ namespace StartFinance.Views
             MonthlyData.Text = "Monthly : " + nnn.MonthlyStatus().ToString();
             RatioReportTxt.Text = nnn.RatioReport();
 
-            conn.CreateTable<Assets>();
-            var query1 = conn.Table<Assets>();
-            Assetme.ItemsSource = query1.ToList();
+            conn.CreateTable<ShoppingList>();
+            var query1 = conn.Table<ShoppingList>();
+            ShoppingListView.ItemsSource = query1.ToList();
         }
 
     }
