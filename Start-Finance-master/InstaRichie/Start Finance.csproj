@@ -117,6 +117,9 @@
     <Compile Include="Views\AccountsPage.xaml.cs">
       <DependentUpon>AccountsPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\AssetsPage.xaml.cs">
+      <DependentUpon>AssetsPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ShoppingListPage.xaml.cs">
       <DependentUpon>ShoppingListPage.xaml</DependentUpon>
     </Compile>
@@ -185,6 +188,10 @@
     <Page Include="Views\AccountsPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\AssetsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\ShoppingListPage.xaml">
       <SubType>Designer</SubType>
