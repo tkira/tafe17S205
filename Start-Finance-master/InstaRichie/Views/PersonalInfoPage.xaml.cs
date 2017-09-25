@@ -40,6 +40,28 @@ namespace StartFinance.Views
             Results();
         }
 
+        public string FinalDate()
+        {
+            string CDay = dob.Date.Value.Day.ToString();
+            string CMonth = dob.Date.Value.Month.ToString();
+            string CYear = dob.Date.Value.Year.ToString();
+            string EndDate = "" + CDay + "/" + CMonth + "/" + CYear;
+
+            return EndDate;
+        }
+
+        public void ClearAll()
+        {
+            fName.Text = "";
+            lName.Text = "";
+            email.Text = "";
+            phone.Text = "";
+            RadBtnM.IsChecked = false;
+            RadBtnF.IsChecked = false;
+            dob.Date = null;
+
+        }
+
         public void Results()
         {
             // Creating table
@@ -48,12 +70,22 @@ namespace StartFinance.Views
             InfoList.ItemsSource = query.ToList();
         }
 
-        private void RadBtnF_Checked(object sender, RoutedEventArgs e) => sex = "Female";
-
-        private void RadBtnM_Checked(object sender, RoutedEventArgs e) => sex = "Male";
-
-        private async void AppBarButton_Click(object sender, RoutedEventArgs e)
+        private string DetSex()
         {
+            if (RadBtnM.IsChecked == true)
+            {
+                sex = "Male";
+            }
+            else if (RadBtnF.IsChecked == true)
+            {
+                sex = "Female";
+            }
+            return sex;
+        }
+
+        private async void AddInfo_Click(object sender, RoutedEventArgs e)
+        {
+
             try
             {
                 // checks if anything is null
@@ -77,7 +109,12 @@ namespace StartFinance.Views
                     MessageDialog dialog = new MessageDialog("Phone Number not Entered", "Oops..!");
                     await dialog.ShowAsync();
                 }
-                else if (dob.CalendarIdentifier.ToString() == "")
+                else if (DetSex() == "")
+                {
+                    MessageDialog dialog = new MessageDialog("Gender not Selected", "Oops..!");
+                    await dialog.ShowAsync();
+                }
+                else if (dob.Date.ToString() == "")
                 {
                     MessageDialog dialog = new MessageDialog("Date of Birth not Selected", "Oops..!");
                     await dialog.ShowAsync();
@@ -90,11 +127,13 @@ namespace StartFinance.Views
                         LastName = lName.Text,
                         Email = email.Text,
                         Phone = phone.Text,
-                        DOB = dob.ToString(),
-                        Gender = sex
+                        DOB = FinalDate(),
+                        Gender = DetSex().ToString()
                     });
                     Results();
                 }
+
+                ClearAll();
 
             }
             catch (Exception ex)
@@ -135,21 +174,34 @@ namespace StartFinance.Views
             var result = await ShowConf.ShowAsync();
             if ((int)result.Id == 0)
             {
-                // checks if data is null else inserts
+                pageHeader.PrimaryCommands.Remove(add);
+                pageHeader.PrimaryCommands.Remove(edit);
+                pageHeader.PrimaryCommands.Remove(delete);
+                accept.Visibility = Visibility.Visible;
+
+                DateTime birthDate = DateTime.Parse(((PersonalInfo)InfoList.SelectedItem).DOB);
+
                 try
                 {
                     fName.Text = ((PersonalInfo)InfoList.SelectedItem).FirstName;
                     lName.Text = ((PersonalInfo)InfoList.SelectedItem).LastName;
                     email.Text = ((PersonalInfo)InfoList.SelectedItem).Email;
                     phone.Text = ((PersonalInfo)InfoList.SelectedItem).Phone;
-                    dob.DateFormat = ((PersonalInfo)InfoList.SelectedItem).DOB;
+                    this.dob.Date = birthDate;
+                    if (DetSex() == "Male")
+                    {
+                        RadBtnM.IsChecked = true;
+                    }
+                    else
+                    {
+                        RadBtnF.IsChecked = true;
+                    }
 
-                    //var querydel = conn.Query<PersonalInfo>("DELETE FROM PersonalInfo WHERE FirstName = '" + first + "' and LastName = '" + last + "'");
                     Results();
                 }
                 catch (NullReferenceException)
                 {
-                    MessageDialog ClearDialog = new MessageDialog("Please select the item to Delete", "Oops..!");
+                    MessageDialog ClearDialog = new MessageDialog("Please select the item to Edit", "Oops..!");
                     await ClearDialog.ShowAsync();
                 }
             }
@@ -182,17 +234,65 @@ namespace StartFinance.Views
             var result = await ShowConf.ShowAsync();
             if ((int)result.Id == 0)
             {
-                // checks if data is null else inserts
+                
+
                 try
                 {
                     string first = ((PersonalInfo)InfoList.SelectedItem).FirstName;
                     string last = ((PersonalInfo)InfoList.SelectedItem).LastName;
-                    var querydel = conn.Query<PersonalInfo>("DELETE FROM PersonalInfo WHERE FirstName = '" + first + "' and LastName = '" + last + "'");
+                    string birth = ((PersonalInfo)InfoList.SelectedItem).DOB;
+
+                    var querydel = conn.Query<PersonalInfo>("DELETE FROM PersonalInfo WHERE FirstName = '" + first + 
+                        "' and LastName = '" + last + "' and DOB = '" + birth + "'");
                     Results();
                 }
                 catch (NullReferenceException)
                 {
                     MessageDialog ClearDialog = new MessageDialog("Please select the item to Delete", "Oops..!");
+                    await ClearDialog.ShowAsync();
+                }
+            }
+            else
+            {
+                //
+            }
+        }
+
+        private async void AcceptChange_Click(object sender, RoutedEventArgs e)
+        {
+            MessageDialog ShowConf = new MessageDialog("Do you wish to accept changes?", "Important");
+            ShowConf.Commands.Add(new UICommand("Yes, Accept")
+            {
+                Id = 0
+            });
+            ShowConf.Commands.Add(new UICommand("Cancel")
+            {
+                Id = 1
+            });
+            ShowConf.DefaultCommandIndex = 0;
+            ShowConf.CancelCommandIndex = 1;
+
+            var result = await ShowConf.ShowAsync();
+            if ((int)result.Id == 0)
+            {
+
+
+                try
+                {
+                    conn.Insert(new PersonalInfo()
+                    {
+                        FirstName = fName.Text,
+                        LastName = lName.Text,
+                        Email = email.Text,
+                        Phone = phone.Text,
+                        DOB = FinalDate(),
+                        Gender = DetSex().ToString()
+                    });
+                    Results();
+                }
+                catch (NullReferenceException)
+                {
+                    MessageDialog ClearDialog = new MessageDialog("Please select the item to Edit", "Oops..!");
                     await ClearDialog.ShowAsync();
                 }
             }
