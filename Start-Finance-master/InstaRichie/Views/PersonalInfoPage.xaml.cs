@@ -137,17 +137,12 @@ namespace StartFinance.Views
 
             }
             catch (Exception ex)
-            {   // Exception to display when email i not valid or numbers not entered for phone
+            {   // Exception to display when email is not valid or numbers not entered for phone
                 if (ex is FormatException)
                 {
                     MessageDialog dialog = new MessageDialog("You have entered invalid data", "Oops..!");
                     await dialog.ShowAsync();
-                }   // Exception handling when SQLite contraints are violated
-                else if (ex is SQLiteException)
-                {
-                    MessageDialog dialog = new MessageDialog("Account Name already exist, Try Different Name", "Oops..!");
-                    await dialog.ShowAsync();
-                }
+                }   
                 else
                 {
                     /// no idea
@@ -174,9 +169,9 @@ namespace StartFinance.Views
             var result = await ShowConf.ShowAsync();
             if ((int)result.Id == 0)
             {
-                pageHeader.PrimaryCommands.Remove(add);
-                pageHeader.PrimaryCommands.Remove(edit);
-                pageHeader.PrimaryCommands.Remove(delete);
+                add.Visibility = Visibility.Collapsed;
+                edit.Visibility = Visibility.Collapsed;
+                delete.Visibility = Visibility.Collapsed;
                 accept.Visibility = Visibility.Visible;
 
                 DateTime birthDate = DateTime.Parse(((PersonalInfo)InfoList.SelectedItem).DOB);
@@ -275,19 +270,24 @@ namespace StartFinance.Views
             var result = await ShowConf.ShowAsync();
             if ((int)result.Id == 0)
             {
-
+                add.Visibility = Visibility.Visible;
+                edit.Visibility = Visibility.Visible;
+                delete.Visibility = Visibility.Visible;
+                accept.Visibility = Visibility.Collapsed;
 
                 try
                 {
-                    conn.Insert(new PersonalInfo()
-                    {
-                        FirstName = fName.Text,
-                        LastName = lName.Text,
-                        Email = email.Text,
-                        Phone = phone.Text,
-                        DOB = FinalDate(),
-                        Gender = DetSex().ToString()
-                    });
+                    int id = ((PersonalInfo)InfoList.SelectedItem).PersonalID;
+                    string first = fName.Text;
+                    string last = lName.Text;
+                    string mail = email.Text;
+                    string num = phone.Text;
+                    string bday = FinalDate();
+                    string gen = DetSex().ToString();
+
+                    var queryedit = conn.Query<PersonalInfo>("UPDATE PersonalInfo SET FirstName = '" + first + 
+                        "', LastName = '" + last + "', Email = '" + mail + "', Phone = '" + num + 
+                        "', Gender = '" + gen + "', DOB = '" + bday + "' WHERE PersonalID = '" + id + "'");
                     Results();
                 }
                 catch (NullReferenceException)
@@ -300,6 +300,8 @@ namespace StartFinance.Views
             {
                 //
             }
+
+            ClearAll();
         }
     }
 }

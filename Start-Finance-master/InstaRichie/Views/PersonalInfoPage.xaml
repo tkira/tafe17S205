@@ -121,8 +121,8 @@
                             <TextBox x:Name="lName" Header="Last Name" PlaceholderText="Smith" TextWrapping="Wrap" MinWidth="194" />
                         </StackPanel>
                         <StackPanel x:Name="details" Orientation="Horizontal">
-                            <TextBox x:Name="email" Header="Email Address" InputScope="EmailNameOrAddress" PlaceholderText="jsmith@gmail.com" TextWrapping="Wrap" MinWidth="194"/>
-                            <TextBox x:Name="phone" Header="Phone Number" InputScope="TelephoneNumber" PlaceholderText="0400111222" TextWrapping="Wrap" MinWidth="194"/>
+                            <TextBox x:Name="email" Header="Email Address" PlaceholderText="jsmith@gmail.com" TextWrapping="Wrap" MinWidth="194"/>
+                            <TextBox x:Name="phone" Header="Phone Number" PlaceholderText="0400111222" TextWrapping="Wrap" MinWidth="194"/>
                         </StackPanel>
                         <StackPanel x:Name="gender" Orientation="Horizontal">
                             <TextBlock Text="Gender" MinWidth="80" />
