@@ -45,7 +45,7 @@ namespace StartFinance.Views
             string CDay = dob.Date.Value.Day.ToString();
             string CMonth = dob.Date.Value.Month.ToString();
             string CYear = dob.Date.Value.Year.ToString();
-            string EndDate = "" + CDay + "/" + CMonth + "/" + CYear;
+            string EndDate = "" + CMonth + "/" + CDay + "/" + CYear;
 
             return EndDate;
         }
