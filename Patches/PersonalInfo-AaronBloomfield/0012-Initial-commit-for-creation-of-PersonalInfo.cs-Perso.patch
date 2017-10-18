@@ -1,0 +1,72 @@
+From f5f906b2d1d6f054ad6cc6004538c8f0c7f916a2 Mon Sep 17 00:00:00 2001
+From: Aaron Bloomfield <azzabloom@gmail.com>
+Date: Sun, 24 Sep 2017 15:11:27 +0930
+Subject: [PATCH 12/18] Initial commit for creation of PersonalInfo.cs,
+ PersonalInfoPage.xaml and PersonalInfoPage.xaml.cs
+
+---
+ Start-Finance-master/InstaRichie/Start Finance.csproj |  8 ++++++++
+ Start-Finance-master/InstaRichie/Views/Shell.xaml     | 14 +++++++++++++-
+ 2 files changed, 21 insertions(+), 1 deletion(-)
+
+diff --git a/Start-Finance-master/InstaRichie/Start Finance.csproj b/Start-Finance-master/InstaRichie/Start Finance.csproj
+index 066bed3..9f2be6f 100644
+--- a/Start-Finance-master/InstaRichie/Start Finance.csproj	
++++ b/Start-Finance-master/InstaRichie/Start Finance.csproj	
+@@ -105,6 +105,7 @@
+     <Compile Include="Models\Assets.cs" />
+     <Compile Include="Models\Category.cs" />
+     <Compile Include="Models\Debt.cs" />
++    <Compile Include="Models\PersonalInfo.cs" />
+     <Compile Include="Models\Transactions.cs" />
+     <Compile Include="Models\WishList.cs" />
+     <Compile Include="Properties\AssemblyInfo.cs" />
+@@ -134,6 +135,9 @@
+     <Compile Include="Views\MainPage.xaml.cs">
+       <DependentUpon>MainPage.xaml</DependentUpon>
+     </Compile>
++    <Compile Include="Views\PersonalInfoPage.xaml.cs">
++      <DependentUpon>PersonalInfoPage.xaml</DependentUpon>
++    </Compile>
+     <Compile Include="Views\SettingsPage.xaml.cs">
+       <DependentUpon>SettingsPage.xaml</DependentUpon>
+     </Compile>
+@@ -209,6 +213,10 @@
+       <Generator>MSBuild:Compile</Generator>
+       <SubType>Designer</SubType>
+     </Page>
++    <Page Include="Views\PersonalInfoPage.xaml">
++      <SubType>Designer</SubType>
++      <Generator>MSBuild:Compile</Generator>
++    </Page>
+     <Page Include="Views\SettingsPage.xaml">
+       <SubType>Designer</SubType>
+       <Generator>MSBuild:Compile</Generator>
+diff --git a/Start-Finance-master/InstaRichie/Views/Shell.xaml b/Start-Finance-master/InstaRichie/Views/Shell.xaml
+index 4f716e0..1819d02 100644
+--- a/Start-Finance-master/InstaRichie/Views/Shell.xaml
++++ b/Start-Finance-master/InstaRichie/Views/Shell.xaml
+@@ -25,7 +25,19 @@
+                                Text="DashBoard" />
+                 </StackPanel>
+             </Controls:HamburgerButtonInfo>
+-            
++
++            <!--  PersonalInfo button  -->
++            <Controls:HamburgerButtonInfo ClearHistory="True" PageType="views:PersonalInfoPage" 
++                                          AutomationProperties.Name="Jerry"
++                                          >
++                <StackPanel Orientation="Horizontal">
++                    <SymbolIcon Width="48" Height="48"
++                		Symbol="ContactInfo" />
++                    <TextBlock Margin="12,0,0,0" VerticalAlignment="Center"
++                               Text="Personal Info" />
++                </StackPanel>
++            </Controls:HamburgerButtonInfo>
++
+             <!--  Transaction List button  -->
+             <Controls:HamburgerButtonInfo ClearHistory="True" PageType="views:TransactionListPage" 
+                                           AutomationProperties.Name="Jerry"
+-- 
+2.11.0.windows.1
+

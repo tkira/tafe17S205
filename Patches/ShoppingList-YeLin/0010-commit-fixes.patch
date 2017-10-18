@@ -1,0 +1,346 @@
+From e76e410df2b69a592cb35ab671e114b14d5005e1 Mon Sep 17 00:00:00 2001
+From: Tung <tung.dang@student.tafesa.edu.au>
+Date: Sun, 24 Sep 2017 09:43:21 +0930
+Subject: [PATCH 10/18] commit fixes
+
+---
+ .../InstaRichie/Start Finance.csproj               |   7 +
+ .../InstaRichie/Views/AssetsPage.xaml              | 151 +++++++++++++++++++++
+ .../InstaRichie/Views/AssetsPage.xaml.cs           | 142 +++++++++++++++++++
+ 3 files changed, 300 insertions(+)
+ create mode 100644 Start-Finance-master/InstaRichie/Views/AssetsPage.xaml
+ create mode 100644 Start-Finance-master/InstaRichie/Views/AssetsPage.xaml.cs
+
+diff --git a/Start-Finance-master/InstaRichie/Start Finance.csproj b/Start-Finance-master/InstaRichie/Start Finance.csproj
+index 63b05eb..2c07e83 100644
+--- a/Start-Finance-master/InstaRichie/Start Finance.csproj	
++++ b/Start-Finance-master/InstaRichie/Start Finance.csproj	
+@@ -117,6 +117,9 @@
+     <Compile Include="Views\AccountsPage.xaml.cs">
+       <DependentUpon>AccountsPage.xaml</DependentUpon>
+     </Compile>
++    <Compile Include="Views\AssetsPage.xaml.cs">
++      <DependentUpon>AssetsPage.xaml</DependentUpon>
++    </Compile>
+     <Compile Include="Views\ShoppingListPage.xaml.cs">
+       <DependentUpon>ShoppingListPage.xaml</DependentUpon>
+     </Compile>
+@@ -186,6 +189,10 @@
+       <SubType>Designer</SubType>
+       <Generator>MSBuild:Compile</Generator>
+     </Page>
++    <Page Include="Views\AssetsPage.xaml">
++      <Generator>MSBuild:Compile</Generator>
++      <SubType>Designer</SubType>
++    </Page>
+     <Page Include="Views\ShoppingListPage.xaml">
+       <SubType>Designer</SubType>
+       <Generator>MSBuild:Compile</Generator>
+diff --git a/Start-Finance-master/InstaRichie/Views/AssetsPage.xaml b/Start-Finance-master/InstaRichie/Views/AssetsPage.xaml
+new file mode 100644
+index 0000000..c440c30
+--- /dev/null
++++ b/Start-Finance-master/InstaRichie/Views/AssetsPage.xaml
+@@ -0,0 +1,151 @@
++﻿<!--
++    Start Finance - An to manage your personal finances.
++    
++    Start Finance is free software: you can redistribute it and/or modify
++    it under the terms of the GNU General Public License as published by
++    the Free Software Foundation, either version 3 of the License, or
++    (at your option) any later version.
++    Start Finance is distributed in the hope that it will be useful,
++    but WITHOUT ANY WARRANTY; without even the implied warranty of
++    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++    GNU General Public License for more details.
++    You should have received a copy of the GNU General Public License
++    along with Start Finance.  If not, see <http://www.gnu.org/licenses/>.
++
++-->
++
++<Page
++    x:Class="StartFinance.Views.AssetsPage"
++      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
++      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
++      xmlns:Behaviors="using:Template10.Behaviors"
++      xmlns:Core="using:Microsoft.Xaml.Interactions.Core"
++      xmlns:Interactivity="using:Microsoft.Xaml.Interactivity"
++      xmlns:controls="using:Template10.Controls"
++      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
++      xmlns:local="using:StartFinance.Views"
++      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
++      Loaded="Page_Loaded"
++      xmlns:vm="using:StartFinance.ViewModels" mc:Ignorable="d">
++
++    <Page.Resources>
++        <DataTemplate x:Key="AssetListDatavalue">
++            <Grid>
++                <StackPanel Orientation="Horizontal">
++                    <TextBlock Text="{Binding ID}" Padding="0,0,15,0"/>
++                    <TextBlock Text="{Binding AssetName}" Padding="0,0,15,0"/>
++                    <TextBlock Text="{Binding AssetValue}" Padding="0,0,15,0"/>
++                </StackPanel>
++            </Grid>
++        </DataTemplate>
++    </Page.Resources>
++
++    <Page.DataContext>
++        <vm:MainPageViewModel x:Name="ViewModel" />
++    </Page.DataContext>
++
++    <RelativePanel Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
++        <VisualStateManager.VisualStateGroups>
++            <VisualStateGroup x:Name="AdaptiveVisualStateGroup">
++                <VisualState x:Name="VisualStateNarrow">
++                    <VisualState.StateTriggers>
++                        <AdaptiveTrigger MinWindowWidth="{StaticResource NarrowMinWidth}" />
++                    </VisualState.StateTriggers>
++                    <VisualState.Setters>
++                        <!--  TODO: change properties for narrow view  -->
++                        <!--<Setter Target="AccDataGrid.(RelativePanel.Below)" Value="pageStart" />-->
++                    </VisualState.Setters>
++                </VisualState>
++                <VisualState x:Name="VisualStateNormal">
++                    <VisualState.StateTriggers>
++                        <AdaptiveTrigger MinWindowWidth="{StaticResource NormalMinWidth}" />
++                    </VisualState.StateTriggers>
++                    <VisualState.Setters>
++                        <!--  TODO: change properties for normal view  -->
++                        <!--<Setter Target="AccDataGrid.(RelativePanel.RightOf)" Value="pageStart" />-->
++                    </VisualState.Setters>
++                </VisualState>
++                <VisualState x:Name="VisualStateWide">
++                    <VisualState.StateTriggers>
++                        <AdaptiveTrigger MinWindowWidth="{StaticResource WideMinWidth}" />
++                    </VisualState.StateTriggers>
++                    <VisualState.Setters>
++                        <!--  TODO: change properties for wide view  -->
++                        <!--<Setter Target="AccDataGrid.(RelativePanel.RightOf)" Value="pageStart" />-->
++                    </VisualState.Setters>
++                </VisualState>
++            </VisualStateGroup>
++        </VisualStateManager.VisualStateGroups>
++
++        <controls:PageHeader x:Name="pageHeader" RelativePanel.AlignLeftWithPanel="True"
++			RelativePanel.AlignRightWithPanel="True"
++			RelativePanel.AlignTopWithPanel="True" Text="Manage Assets">
++
++            <!--  secondary commands  -->
++            <controls:PageHeader.SecondaryCommands>
++                <AppBarButton Click="{x:Bind ViewModel.GotoSettings}" Label="Settings" />
++                <AppBarButton Click="{x:Bind ViewModel.GotoPrivacy}" Label="Privacy" />
++                <AppBarButton Click="{x:Bind ViewModel.GotoAbout}" Label="About" />
++            </controls:PageHeader.SecondaryCommands>
++
++        </controls:PageHeader>
++
++        <controls:PageHeader x:Name="pageFooter" RelativePanel.AlignLeftWithPanel="True"
++			RelativePanel.AlignRightWithPanel="True"
++			RelativePanel.AlignBottomWithPanel="True">
++
++            <!--  secondary commands  -->
++            <controls:PageHeader.PrimaryCommands>
++                <AppBarButton Icon="Add" Label="Add Asset" Click="AddData" />
++                <AppBarButton Icon="Delete" Label="Delete Asset" Click="DeleteAccout_Click" />
++            </controls:PageHeader.PrimaryCommands>
++
++        </controls:PageHeader>
++
++        <!--  page content  -->
++        <Pivot>
++            <RelativePanel.Below>pageHeader</RelativePanel.Below>
++            <RelativePanel.Above>pageFooter</RelativePanel.Above>
++            <PivotItem Header="Assets">
++                <Grid>
++                    <Grid.RowDefinitions>
++                        <RowDefinition Height="150"/>
++                        <RowDefinition Height="*"/>
++                    </Grid.RowDefinitions>
++                    <StackPanel x:Name="pageStart" Grid.Row="0" VerticalAlignment="Top"
++                                HorizontalAlignment="Stretch"
++                                Orientation="Vertical" Margin="10,0,10,0">
++                        <TextBox x:Name="AssetNameText" PlaceholderText="Car, House, Valuables" Header="Asset Name"/>
++                        <TextBox x:Name="AssetValue" PlaceholderText="100.00" TextWrapping="Wrap" InputScope="Number" Header="Asset Value"/>
++                    </StackPanel>
++                    <ListView x:Name="AssetListView" Grid.Row="1" HorizontalAlignment="Stretch"
++                                VerticalAlignment="Stretch"
++                                ItemTemplate="{StaticResource AssetListDatavalue}">
++                        <RelativePanel.Below>pageStart</RelativePanel.Below>
++                    </ListView>
++                </Grid>
++            </PivotItem>
++        </Pivot>
++        <!--<Grid Width="300" x:Name="PageContent">
++            <RelativePanel.Below>pageHeader</RelativePanel.Below>
++            <StackPanel x:Name="pageStart" VerticalAlignment="Top"
++                                HorizontalAlignment="Stretch"
++                                Orientation="Vertical" Margin="10,0,10,0">
++                <TextBox x:Name="AssetNameText" Header="Asset Name"/>
++                <TextBox x:Name="AssetValue" TextWrapping="Wrap" InputScope="Number" Header="Asset Value"/>
++                --><!--<StackPanel Orientation="Horizontal">
++                    <Button x:Name="AddWish" Content="Add Account" Margin="0,20,0,0" Click="AddData"/>
++                    <Button x:Name="DeleteItem" Content="Delete Item" Margin="15,20,0,0" Click="DeleteAccout_Click"/>
++                </StackPanel>--><!--
++            </StackPanel>
++        </Grid>
++        <ListView x:Name="AssetListView" HorizontalAlignment="Stretch"
++                  VerticalAlignment="Stretch" Height="350"
++                  RelativePanel.Below="PageContent"
++                  ItemTemplate="{StaticResource AssetListDatavalue}">
++            --><!--Add here--><!--
++        </ListView>-->
++
++
++    </RelativePanel>
++</Page>
+diff --git a/Start-Finance-master/InstaRichie/Views/AssetsPage.xaml.cs b/Start-Finance-master/InstaRichie/Views/AssetsPage.xaml.cs
+new file mode 100644
+index 0000000..d475365
+--- /dev/null
++++ b/Start-Finance-master/InstaRichie/Views/AssetsPage.xaml.cs
+@@ -0,0 +1,142 @@
++﻿// **************************************************************************
++//Start Finance - An to manage your personal finances.
++//Copyright(C) 2016  Jijo Bose
++
++//Start Finance is free software: you can redistribute it and/or modify
++//it under the terms of the GNU General Public License as published by
++//the Free Software Foundation, either version 3 of the License, or
++//(at your option) any later version.
++
++//Start Finance is distributed in the hope that it will be useful,
++//but WITHOUT ANY WARRANTY; without even the implied warranty of
++//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
++//GNU General Public License for more details.
++
++//You should have received a copy of the GNU General Public License
++//along with Start Finance.If not, see<http://www.gnu.org/licenses/>.
++// ***************************************************************************
++
++using System;
++using System.Collections.Generic;
++using System.IO;
++using System.Linq;
++using System.Runtime.InteropServices.WindowsRuntime;
++using Windows.Foundation;
++using Windows.Foundation.Collections;
++using Windows.UI.Xaml;
++using Windows.UI.Xaml.Controls;
++using Windows.UI.Xaml.Controls.Primitives;
++using Windows.UI.Xaml.Data;
++using Windows.UI.Xaml.Input;
++using Windows.UI.Xaml.Media;
++using Windows.UI.Xaml.Navigation;
++using SQLite;
++using StartFinance.Models;
++using Windows.UI.Popups;
++using SQLite.Net;
++
++// The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
++
++namespace StartFinance.Views
++{
++    /// <summary>
++    /// An empty page that can be used on its own or navigated to within a Frame.
++    /// </summary>
++    public sealed partial class AssetsPage : Page
++    {
++        SQLiteConnection conn; // adding an SQLite connection
++        string path = Path.Combine(Windows.Storage.ApplicationData.Current.LocalFolder.Path, "Findata.sqlite");
++
++        public AssetsPage()
++        {
++            this.InitializeComponent();
++            NavigationCacheMode = Windows.UI.Xaml.Navigation.NavigationCacheMode.Enabled;
++            /// Initializing a database
++            conn = new SQLite.Net.SQLiteConnection(new SQLite.Net.Platform.WinRT.SQLitePlatformWinRT(), path);
++            Results();
++        }
++
++        public void Results()
++        {
++            // Creating table
++            conn.CreateTable<Assets>();
++
++            /// Refresh Data
++            var query = conn.Table<Assets>();
++            AssetListView.ItemsSource = query.ToList();
++        }
++
++        private async void AddData(object sender, RoutedEventArgs e)
++        {
++            try
++            {
++                if (AssetNameText.Text.ToString() == "")
++                {
++                    MessageDialog dialog = new MessageDialog("No Account Name entered", "Oops..!");
++                    await dialog.ShowAsync();
++                }
++                else
++                {
++                    conn.Insert(new Assets()
++                    {
++                        AssetName = AssetNameText.Text,
++                        AssetValue = Convert.ToDouble(AssetValue.Text)
++                    });
++                    Results();
++                }
++            }
++            catch (Exception ex)
++            {
++                if (ex is FormatException)
++                {
++                    MessageDialog dialog = new MessageDialog("You forgot to enter the Value or entered an invalid data", "Oops..!");
++                    await dialog.ShowAsync();
++                }
++                else if (ex is SQLiteException)
++                {
++                    MessageDialog dialog = new MessageDialog("A Similar Asset Nane already exists, Try a different name", "Oops..!");
++                    await dialog.ShowAsync();
++                }
++            }
++        }
++
++        private async void ClearFileds_Click(object sender, RoutedEventArgs e)
++        {
++            AssetNameText.Text = string.Empty;
++            AssetValue.Text = string.Empty;
++
++            MessageDialog ClearDialog = new MessageDialog("Cleared", "information");
++            await ClearDialog.ShowAsync();
++        }
++
++        private void Page_Loaded(object sender, RoutedEventArgs e)
++        {
++            Results();
++        }
++
++        private async void DeleteAccout_Click(object sender, RoutedEventArgs e)
++        {
++            try
++            {
++                string AccSelection = ((Assets)AssetListView.SelectedItem).AssetName;
++                if (AccSelection == "")
++                {
++                    MessageDialog dialog = new MessageDialog("Not selected the Item", "Oops..!");
++                    await dialog.ShowAsync();
++                }
++                else
++                {
++                    conn.CreateTable<Assets>();
++                    var query1 = conn.Table<Assets>();
++                    var query3 = conn.Query<Assets>("DELETE FROM Assets WHERE AssetName ='" + AccSelection + "'");
++                    AssetListView.ItemsSource = query1.ToList();
++                }
++            }
++            catch (NullReferenceException)
++            {
++                MessageDialog dialog = new MessageDialog("Not selected the Item", "Oops..!");
++                await dialog.ShowAsync();
++            }
++        }
++    }
++}
+-- 
+2.11.0.windows.1
+

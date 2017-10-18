@@ -1,0 +1,120 @@
+From e4816fb19d57b4eba457a70ccc753304f7fb4e11 Mon Sep 17 00:00:00 2001
+From: Tung <tung.dang@student.tafesa.edu.au>
+Date: Sun, 24 Sep 2017 09:18:15 +0930
+Subject: [PATCH 09/18] commit error fixes
+
+---
+ Start-Finance-master/InstaRichie/Views/Shell.xaml  | 24 +++++++--------
+ .../InstaRichie/Views/ShoppingListPage.xaml        |  2 ++
+ .../InstaRichie/Views/ShoppingListPage.xaml.cs     | 34 ++++++++++++++++++++++
+ 3 files changed, 48 insertions(+), 12 deletions(-)
+
+diff --git a/Start-Finance-master/InstaRichie/Views/Shell.xaml b/Start-Finance-master/InstaRichie/Views/Shell.xaml
+index 8bb5c6a..c712113 100644
+--- a/Start-Finance-master/InstaRichie/Views/Shell.xaml
++++ b/Start-Finance-master/InstaRichie/Views/Shell.xaml
+@@ -62,18 +62,6 @@
+                 </StackPanel>
+             </Controls:HamburgerButtonInfo>
+ 
+-            <!--  Assets button  -->
+-            <Controls:HamburgerButtonInfo ClearHistory="True" PageType="views:ShoppingListPage" 
+-                                          AutomationProperties.Name="Jerry"
+-                                          >
+-                <StackPanel Orientation="Horizontal">
+-                    <SymbolIcon Width="48" Height="48"
+-                		Symbol="StopSlideShow" />
+-                    <TextBlock Margin="12,0,0,0" VerticalAlignment="Center"
+-                               Text="Assets" />
+-                </StackPanel>
+-            </Controls:HamburgerButtonInfo>
+-
+             <!--  Accounts button  -->
+             <Controls:HamburgerButtonInfo ClearHistory="True" PageType="views:AccountsPage" 
+                                           AutomationProperties.Name="Jerry"
+@@ -98,6 +86,18 @@
+                                Text="WishList" />
+                 </StackPanel>
+             </Controls:HamburgerButtonInfo>
++
++            <!--  Assets button  -->
++            <Controls:HamburgerButtonInfo ClearHistory="True" PageType="views:ShoppingListPage" 
++                                          AutomationProperties.Name="Jerry"
++                                          >
++                <StackPanel Orientation="Horizontal">
++                    <SymbolIcon Width="48" Height="48"
++                		Symbol="Shop" />
++                    <TextBlock Margin="12,0,0,0" VerticalAlignment="Center"
++                               Text="ShopppingList" />
++                </StackPanel>
++            </Controls:HamburgerButtonInfo>
+         </Controls:HamburgerMenu.PrimaryButtons>
+ 
+         <Controls:HamburgerMenu.SecondaryButtons>
+diff --git a/Start-Finance-master/InstaRichie/Views/ShoppingListPage.xaml b/Start-Finance-master/InstaRichie/Views/ShoppingListPage.xaml
+index 65e2cab..68234df 100644
+--- a/Start-Finance-master/InstaRichie/Views/ShoppingListPage.xaml
++++ b/Start-Finance-master/InstaRichie/Views/ShoppingListPage.xaml
+@@ -100,6 +100,8 @@
+             <controls:PageHeader.PrimaryCommands>
+                 <AppBarButton Icon="Add" Label="Add Asset" Click="AddData" />
+                 <AppBarButton Icon="Delete" Label="Delete Asset" Click="DeleteAccout_Click" />
++                <AppBarButton x:Name="editbtn" Icon="Edit" Label="Edit Asset" Click="EditButton_Click" />
++                <AppBarButton x:Name="savebtn" Icon="Accept" Label="Save Asset" Click="SaveButton_Click" />
+             </controls:PageHeader.PrimaryCommands>
+ 
+         </controls:PageHeader>
+diff --git a/Start-Finance-master/InstaRichie/Views/ShoppingListPage.xaml.cs b/Start-Finance-master/InstaRichie/Views/ShoppingListPage.xaml.cs
+index 7896d01..80b21e4 100644
+--- a/Start-Finance-master/InstaRichie/Views/ShoppingListPage.xaml.cs
++++ b/Start-Finance-master/InstaRichie/Views/ShoppingListPage.xaml.cs
+@@ -50,6 +50,7 @@ namespace StartFinance.Views
+         public ShoppingListPage()
+         {
+             this.InitializeComponent();
++            savebtn.Visibility = Visibility.Collapsed;
+             NavigationCacheMode = Windows.UI.Xaml.Navigation.NavigationCacheMode.Enabled;
+             /// Initializing a database
+             conn = new SQLite.Net.SQLiteConnection(new SQLite.Net.Platform.WinRT.SQLitePlatformWinRT(), path);
+@@ -144,5 +145,38 @@ namespace StartFinance.Views
+                 await dialog.ShowAsync();
+             }
+         }
++
++        int selected;
++
++    private async void EditButton_Click(object sender, RoutedEventArgs e)
++    {
++        if (ShoppingListView.SelectedIndex == -1)
++        {
++            MessageDialog dialog = new MessageDialog("No selected event", "Oops..!");
++            await dialog.ShowAsync();
++        }
++        else
++        {
++            selected = ((ShoppingList)ShoppingListView.SelectedItem).ID; //Store ID to be able to update data.
++            ShoppingItemIDText.Text = ((ShoppingList)ShoppingListView.SelectedItem).ShoppingItemID;
++            ShoppingDateText.Text = ((ShoppingList)ShoppingListView.SelectedItem).ShoppingDate;
++            NameOfItemText.Text = ((ShoppingList)ShoppingListView.SelectedItem).ShoppingItemID;
++            PriceQuotedText.Text = Convert.ToString(((ShoppingList)ShoppingListView.SelectedItem).PriceQuoted);
++
++            editbtn.Visibility = Visibility.Collapsed;
++            savebtn.Visibility = Visibility.Visible;
++        }
+     }
++
++    private void SaveButton_Click(object sender, RoutedEventArgs e)
++    {
++            Double priceQ = Convert.ToDouble(PriceQuotedText.Text.ToString());
++        conn.Query<ShoppingList>("UPDATE ShoppingList SET ShoppingItemID = '" + ShoppingItemIDText.Text + "', ShoppingDate = '" + ShoppingDateText.Text + "', NameOfItem = '" + NameOfItemText.Text + "', PriceQuoted = '" + priceQ + "' WHERE ID = '" + selected  + "'");
++
++        editbtn.Visibility = Visibility.Visible;
++        savebtn.Visibility = Visibility.Collapsed;
++
++        Results();
++    }
++}
+ }
+-- 
+2.11.0.windows.1
+

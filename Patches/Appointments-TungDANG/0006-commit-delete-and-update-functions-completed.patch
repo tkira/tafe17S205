@@ -1,0 +1,212 @@
+From 5c13eb2cff2861854a8e1e8de706acd7ec78debb Mon Sep 17 00:00:00 2001
+From: Tung <tung.dang@student.tafesa.edu.au>
+Date: Tue, 19 Sep 2017 18:42:06 +0930
+Subject: [PATCH 06/18] commit delete and update functions completed.
+
+---
+ .../InstaRichie/Views/AppointmentsPage.xaml        |  12 +-
+ .../InstaRichie/Views/AppointmentsPage.xaml.cs     | 124 +++++++++++++++++----
+ 2 files changed, 110 insertions(+), 26 deletions(-)
+
+diff --git a/Start-Finance-master/InstaRichie/Views/AppointmentsPage.xaml b/Start-Finance-master/InstaRichie/Views/AppointmentsPage.xaml
+index 8783c30..c6c9427 100644
+--- a/Start-Finance-master/InstaRichie/Views/AppointmentsPage.xaml
++++ b/Start-Finance-master/InstaRichie/Views/AppointmentsPage.xaml
+@@ -81,8 +81,10 @@
+ 
+             <!--  secondary commands  -->
+             <controls:PageHeader.PrimaryCommands>
+-                <AppBarButton Icon="Add" Label="Add Appointment" Click="AppBarButton_Click" />
+-                <AppBarButton Icon="Delete" Label="Delete Appointment" Click="DeleteItem_Click" />
++                <AppBarButton x:Name="addbtn" Icon="Add" Label="Add Appointment" Click="AppBarButton_Click" />
++                <AppBarButton x:Name="editbtn" Icon="Edit" Label="Edit Appointment" Click="EditButton_Click" />
++                <AppBarButton x:Name="deletebtn" Icon="Delete" Label="Delete Appointment" Click="DeleteItem_Click" />
++                <AppBarButton x:Name="savebtn" Icon="Accept" Label="Save Appointment" Click="SaveButton_Click" />
+             </controls:PageHeader.PrimaryCommands>
+         </controls:PageHeader>
+ 
+@@ -100,9 +102,9 @@
+                         HorizontalAlignment="Stretch"
+                         Orientation="Vertical" Margin="10,5,0,0" Height="240">
+                         <TextBox x:Name="eventName" Header="Event Name" PlaceholderText="Event" TextWrapping="Wrap"/>
+-                        <CalendarDatePicker x:Name="eventDate" HorizontalAlignment="Left" Header="Event Date"/>
+-                        <TextBox x:Name="startTime" Header="Start Time" PlaceholderText="Time (hh:mm)" TextWrapping="Wrap"/>
+-                        <TextBox x:Name="endTime" Header="End Time" PlaceholderText="Time (hh:mm)" TextWrapping="Wrap"/>
++                        <DatePicker x:Name="eventDate" HorizontalAlignment="Left" Header="Event Date"/>
++                        <TimePicker x:Name="startTime" HorizontalAlignment="Left" VerticalAlignment="Stretch" Header="Start Time" ClockIdentifier="12HourClock"/>
++                        <TimePicker x:Name="endTime" HorizontalAlignment="Left" VerticalAlignment="Stretch" Header="End Time" ClockIdentifier="12HourClock"/>
+                     </StackPanel>
+                     <ListView x:Name="AppointmentList" Grid.Row="3" ItemTemplate="{StaticResource AppointmentListView}"
+                               HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,-218">
+diff --git a/Start-Finance-master/InstaRichie/Views/AppointmentsPage.xaml.cs b/Start-Finance-master/InstaRichie/Views/AppointmentsPage.xaml.cs
+index 30abefa..e9ae3e1 100644
+--- a/Start-Finance-master/InstaRichie/Views/AppointmentsPage.xaml.cs
++++ b/Start-Finance-master/InstaRichie/Views/AppointmentsPage.xaml.cs
+@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Navigation;
+ using Windows.UI.Popups;
+ using StartFinance.Models;
+ using SQLite.Net;
++using System.Globalization;
+ 
+ // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
+ 
+@@ -28,9 +29,12 @@ namespace StartFinance.Views
+         SQLiteConnection conn; // adding an SQLite connection
+         string path = Path.Combine(Windows.Storage.ApplicationData.Current.LocalFolder.Path, "Findata.sqlite");
+ 
++        int idSelected; //need for editing. This helps me send selected id accross functions.
++
+         public AppointmentsPage()
+         {
+             this.InitializeComponent();
++            savebtn.Visibility = Visibility.Collapsed; //Make Sure the Save Button is not visible.
+             NavigationCacheMode = Windows.UI.Xaml.Navigation.NavigationCacheMode.Enabled;
+             /// Initializing a database
+             conn = new SQLite.Net.SQLiteConnection(new SQLite.Net.Platform.WinRT.SQLitePlatformWinRT(), path);
+@@ -63,34 +67,27 @@ namespace StartFinance.Views
+                     MessageDialog dialog = new MessageDialog("Event Name not Entered", "Oops..!");
+                     await dialog.ShowAsync();
+                 }
+-                else if (startTime.Text.ToString() == "")
+-                {
+-                    MessageDialog dialog = new MessageDialog("Start Time not Entered", "Oops..!");
+-                    await dialog.ShowAsync();
+-                }
+-                else if (endTime.Text.ToString() == "")
+-                {
+-                    MessageDialog dialog = new MessageDialog("End Time not Entered", "Oops..!");
+-                    await dialog.ShowAsync();
+-                }
+-                else if (endTime.Text.ToString() == startTime.Text.ToString())
+-                {
+-                    MessageDialog dialog = new MessageDialog("Time are same", "Oops..!");
+-                    await dialog.ShowAsync();
+-                }
+                 else
+                 {
+-                    string CDay = eventDate.Date.Value.Day.ToString();
+-                    string CMonth = eventDate.Date.Value.Month.ToString();
+-                    string CYear = eventDate.Date.Value.Year.ToString();
++                    string CDay = eventDate.Date.Date.Day.ToString();
++                    string CMonth = eventDate.Date.Date.Month.ToString();
++                    string CYear = eventDate.Date.Date.Year.ToString();
+                     string EventDateString = "" + CMonth + "/" + CDay + "/" + CYear;
++
++                    string hour = startTime.Time.Hours.ToString(); //Convert All Time and date into string for database.
++                    string minutes = startTime.Time.Minutes.ToString();
++                    string StartTimeString = "" + hour + ":" + minutes;
++
++                    string hour2 = endTime.Time.Hours.ToString();
++                    string minutes2 = endTime.Time.Minutes.ToString();
++                    string EndTimeString = "" + hour2 + ":" + minutes2;
+                     // inserts the data
+                     conn.Insert(new Appointments()
+                     {
+                         EventName = eventName.Text,
+                         EventDate = EventDateString,
+-                        StartTime = startTime.Text,
+-                        EndTime = endTime.Text
++                        StartTime = StartTimeString,
++                        EndTime = EndTimeString
+                     });
+                     Results();
+                 }
+@@ -117,8 +114,93 @@ namespace StartFinance.Views
+ 
+         private async void DeleteItem_Click(object sender, RoutedEventArgs e)
+         {
++            MessageDialog ShowConf = new MessageDialog("Are you sure?", "Important");
++            ShowConf.Commands.Add(new UICommand("Yes, Delete")
++            {
++                Id = 0
++            });
++            ShowConf.Commands.Add(new UICommand("Cancel")
++            {
++                Id = 1
++            });
++            ShowConf.DefaultCommandIndex = 0;
++            ShowConf.CancelCommandIndex = 1;
++
++            var result = await ShowConf.ShowAsync();
++            if ((int)result.Id == 0)
++            {
++                // checks if data is null else inserts
++                try
++                {
++                    int appointmentD = ((Appointments)AppointmentList.SelectedItem).AppointmentID;
++                    var querydel = conn.Query<Appointments>("DELETE FROM Appointments WHERE AppointmentID='" + appointmentD + "'");
++                    Results();
++                }
++                catch (NullReferenceException)
++                {
++                    MessageDialog ClearDialog = new MessageDialog("Please select the item to Delete", "Oops..!");
++                    await ClearDialog.ShowAsync();
++                }
++            }
++            else
++            {
++                //
++            }
+         }
+ 
++        private async void EditButton_Click(object sender, RoutedEventArgs e)
++        {
++                if (AppointmentList.SelectedIndex == -1)
++                {
++                    MessageDialog dialog = new MessageDialog("No selected event", "Oops..!");
++                    await dialog.ShowAsync();
++                }
++                else
++                {
++                    idSelected = ((Appointments)AppointmentList.SelectedItem).AppointmentID; //Store ID to be able to update data.
++                    eventName.Text = ((Appointments)AppointmentList.SelectedItem).EventName;
++
++                    DateTime eventDateConvert = DateTime.Parse(((Appointments)AppointmentList.SelectedItem).EventDate);
++                    this.eventDate.Date = eventDateConvert;
++                                  
++                    TimeSpan startTimeConvert = TimeSpan.Parse(((Appointments)AppointmentList.SelectedItem).StartTime);
++                    this.startTime.Time = startTimeConvert;
++
++                    TimeSpan endTimeConvert = TimeSpan.Parse(((Appointments)AppointmentList.SelectedItem).EndTime);
++                    this.endTime.Time = endTimeConvert;
++
++                    addbtn.Visibility = Visibility.Collapsed;
++                    editbtn.Visibility = Visibility.Collapsed;
++                    deletebtn.Visibility = Visibility.Collapsed;
++                    savebtn.Visibility = Visibility.Visible;
+ 
++            }
++          }
++
++        private void SaveButton_Click(object sender, RoutedEventArgs e)
++        {
++            string CDay = eventDate.Date.Date.Day.ToString();
++            string CMonth = eventDate.Date.Date.Month.ToString();
++            string CYear = eventDate.Date.Date.Year.ToString();
++            string EventDateString = "" + CMonth + "/" + CDay + "/" + CYear;
++
++            string hour = startTime.Time.Hours.ToString(); //Convert All Time and date into string for database.
++            string minutes = startTime.Time.Minutes.ToString();
++            string StartTimeString = "" + hour + ":" + minutes;
++
++            string hour2 = endTime.Time.Hours.ToString();
++            string minutes2 = endTime.Time.Minutes.ToString();
++            string EndTimeString = "" + hour2 + ":" + minutes2;
++            // inserts the data
++
++            conn.Query<Appointments>("UPDATE Appointments SET EventName = '" + eventName.Text + "', EventDate = '" + EventDateString + "', StartTime = '" + StartTimeString + "', EndTime = '" + EndTimeString + "' WHERE AppointmentID ='" + idSelected + "'");
++
++            addbtn.Visibility = Visibility.Visible;
++            editbtn.Visibility = Visibility.Visible;
++            deletebtn.Visibility = Visibility.Visible;
++            savebtn.Visibility = Visibility.Collapsed;
++
++            Results();
++        }
++        }
+     }
+-}
+\ No newline at end of file
+-- 
+2.11.0.windows.1
+

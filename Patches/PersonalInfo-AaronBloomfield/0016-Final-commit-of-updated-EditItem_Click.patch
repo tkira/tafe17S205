@@ -1,0 +1,110 @@
+From 42c1c30f9da6bd2c7b9fc8a80666e497e84038ac Mon Sep 17 00:00:00 2001
+From: Aaron Bloomfield <azzabloom@gmail.com>
+Date: Mon, 25 Sep 2017 22:13:16 +0930
+Subject: [PATCH 16/18] Final commit of updated EditItem_Click
+
+---
+ .../InstaRichie/Views/PersonalInfoPage.xaml        |  4 +--
+ .../InstaRichie/Views/PersonalInfoPage.xaml.cs     | 42 +++++++++++-----------
+ 2 files changed, 24 insertions(+), 22 deletions(-)
+
+diff --git a/Start-Finance-master/InstaRichie/Views/PersonalInfoPage.xaml b/Start-Finance-master/InstaRichie/Views/PersonalInfoPage.xaml
+index 0d226db..51eb88b 100644
+--- a/Start-Finance-master/InstaRichie/Views/PersonalInfoPage.xaml
++++ b/Start-Finance-master/InstaRichie/Views/PersonalInfoPage.xaml
+@@ -121,8 +121,8 @@
+                             <TextBox x:Name="lName" Header="Last Name" PlaceholderText="Smith" TextWrapping="Wrap" MinWidth="194" />
+                         </StackPanel>
+                         <StackPanel x:Name="details" Orientation="Horizontal">
+-                            <TextBox x:Name="email" Header="Email Address" InputScope="EmailNameOrAddress" PlaceholderText="jsmith@gmail.com" TextWrapping="Wrap" MinWidth="194"/>
+-                            <TextBox x:Name="phone" Header="Phone Number" InputScope="TelephoneNumber" PlaceholderText="0400111222" TextWrapping="Wrap" MinWidth="194"/>
++                            <TextBox x:Name="email" Header="Email Address" PlaceholderText="jsmith@gmail.com" TextWrapping="Wrap" MinWidth="194"/>
++                            <TextBox x:Name="phone" Header="Phone Number" PlaceholderText="0400111222" TextWrapping="Wrap" MinWidth="194"/>
+                         </StackPanel>
+                         <StackPanel x:Name="gender" Orientation="Horizontal">
+                             <TextBlock Text="Gender" MinWidth="80" />
+diff --git a/Start-Finance-master/InstaRichie/Views/PersonalInfoPage.xaml.cs b/Start-Finance-master/InstaRichie/Views/PersonalInfoPage.xaml.cs
+index 5b8e1ac..2fc3338 100644
+--- a/Start-Finance-master/InstaRichie/Views/PersonalInfoPage.xaml.cs
++++ b/Start-Finance-master/InstaRichie/Views/PersonalInfoPage.xaml.cs
+@@ -137,17 +137,12 @@ namespace StartFinance.Views
+ 
+             }
+             catch (Exception ex)
+-            {   // Exception to display when email i not valid or numbers not entered for phone
++            {   // Exception to display when email is not valid or numbers not entered for phone
+                 if (ex is FormatException)
+                 {
+                     MessageDialog dialog = new MessageDialog("You have entered invalid data", "Oops..!");
+                     await dialog.ShowAsync();
+-                }   // Exception handling when SQLite contraints are violated
+-                else if (ex is SQLiteException)
+-                {
+-                    MessageDialog dialog = new MessageDialog("Account Name already exist, Try Different Name", "Oops..!");
+-                    await dialog.ShowAsync();
+-                }
++                }   
+                 else
+                 {
+                     /// no idea
+@@ -174,9 +169,9 @@ namespace StartFinance.Views
+             var result = await ShowConf.ShowAsync();
+             if ((int)result.Id == 0)
+             {
+-                pageHeader.PrimaryCommands.Remove(add);
+-                pageHeader.PrimaryCommands.Remove(edit);
+-                pageHeader.PrimaryCommands.Remove(delete);
++                add.Visibility = Visibility.Collapsed;
++                edit.Visibility = Visibility.Collapsed;
++                delete.Visibility = Visibility.Collapsed;
+                 accept.Visibility = Visibility.Visible;
+ 
+                 DateTime birthDate = DateTime.Parse(((PersonalInfo)InfoList.SelectedItem).DOB);
+@@ -275,19 +270,24 @@ namespace StartFinance.Views
+             var result = await ShowConf.ShowAsync();
+             if ((int)result.Id == 0)
+             {
+-
++                add.Visibility = Visibility.Visible;
++                edit.Visibility = Visibility.Visible;
++                delete.Visibility = Visibility.Visible;
++                accept.Visibility = Visibility.Collapsed;
+ 
+                 try
+                 {
+-                    conn.Insert(new PersonalInfo()
+-                    {
+-                        FirstName = fName.Text,
+-                        LastName = lName.Text,
+-                        Email = email.Text,
+-                        Phone = phone.Text,
+-                        DOB = FinalDate(),
+-                        Gender = DetSex().ToString()
+-                    });
++                    int id = ((PersonalInfo)InfoList.SelectedItem).PersonalID;
++                    string first = fName.Text;
++                    string last = lName.Text;
++                    string mail = email.Text;
++                    string num = phone.Text;
++                    string bday = FinalDate();
++                    string gen = DetSex().ToString();
++
++                    var queryedit = conn.Query<PersonalInfo>("UPDATE PersonalInfo SET FirstName = '" + first + 
++                        "', LastName = '" + last + "', Email = '" + mail + "', Phone = '" + num + 
++                        "', Gender = '" + gen + "', DOB = '" + bday + "' WHERE PersonalID = '" + id + "'");
+                     Results();
+                 }
+                 catch (NullReferenceException)
+@@ -300,6 +300,8 @@ namespace StartFinance.Views
+             {
+                 //
+             }
++
++            ClearAll();
+         }
+     }
+ }
+\ No newline at end of file
+-- 
+2.11.0.windows.1
+

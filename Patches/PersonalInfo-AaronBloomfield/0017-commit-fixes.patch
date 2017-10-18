@@ -1,0 +1,25 @@
+From e2cb3752f7ccaf8abb6b5611d22366c7606e2d8f Mon Sep 17 00:00:00 2001
+From: Tung <tung.dang@student.tafesa.edu.au>
+Date: Mon, 25 Sep 2017 23:03:55 +0930
+Subject: [PATCH 17/18] commit fixes
+
+---
+ Start-Finance-master/InstaRichie/Views/PersonalInfoPage.xaml.cs | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Start-Finance-master/InstaRichie/Views/PersonalInfoPage.xaml.cs b/Start-Finance-master/InstaRichie/Views/PersonalInfoPage.xaml.cs
+index 2fc3338..66f3e63 100644
+--- a/Start-Finance-master/InstaRichie/Views/PersonalInfoPage.xaml.cs
++++ b/Start-Finance-master/InstaRichie/Views/PersonalInfoPage.xaml.cs
+@@ -45,7 +45,7 @@ namespace StartFinance.Views
+             string CDay = dob.Date.Value.Day.ToString();
+             string CMonth = dob.Date.Value.Month.ToString();
+             string CYear = dob.Date.Value.Year.ToString();
+-            string EndDate = "" + CDay + "/" + CMonth + "/" + CYear;
++            string EndDate = "" + CMonth + "/" + CDay + "/" + CYear;
+ 
+             return EndDate;
+         }
+-- 
+2.11.0.windows.1
+

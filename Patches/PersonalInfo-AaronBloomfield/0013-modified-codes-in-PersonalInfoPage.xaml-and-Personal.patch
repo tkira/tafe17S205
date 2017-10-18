@@ -1,0 +1,441 @@
+From cfc5bcb054a9c075ee8672da167e2942d678a219 Mon Sep 17 00:00:00 2001
+From: Aaron Bloomfield <azzabloom@gmail.com>
+Date: Sun, 24 Sep 2017 23:56:14 +0930
+Subject: [PATCH 13/18] modified codes in PersonalInfoPage.xaml and
+ PersonalInfoPage.xaml.cs
+
+---
+ Start-Finance-master/InstaRichie.sln               |  13 +-
+ .../InstaRichie/Models/PersonalInfo.cs             |  34 ++++
+ .../InstaRichie/Views/PersonalInfoPage.xaml        | 129 +++++++++++++
+ .../InstaRichie/Views/PersonalInfoPage.xaml.cs     | 205 +++++++++++++++++++++
+ 4 files changed, 376 insertions(+), 5 deletions(-)
+ create mode 100644 Start-Finance-master/InstaRichie/Models/PersonalInfo.cs
+ create mode 100644 Start-Finance-master/InstaRichie/Views/PersonalInfoPage.xaml
+ create mode 100644 Start-Finance-master/InstaRichie/Views/PersonalInfoPage.xaml.cs
+
+diff --git a/Start-Finance-master/InstaRichie.sln b/Start-Finance-master/InstaRichie.sln
+index 8db83c2..ff92feb 100644
+--- a/Start-Finance-master/InstaRichie.sln
++++ b/Start-Finance-master/InstaRichie.sln
+@@ -1,7 +1,7 @@
+ ﻿
+ Microsoft Visual Studio Solution File, Format Version 12.00
+-# Visual Studio 14
+-VisualStudioVersion = 14.0.25123.0
++# Visual Studio 15
++VisualStudioVersion = 15.0.26730.16
+ MinimumVisualStudioVersion = 10.0.40219.1
+ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Start Finance", "InstaRichie\Start Finance.csproj", "{86228196-FC6B-4A2E-AE7E-4F0B52C8EEF1}"
+ EndProject
+@@ -15,9 +15,9 @@ Global
+ 		Release|x86 = Release|x86
+ 	EndGlobalSection
+ 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+-		{86228196-FC6B-4A2E-AE7E-4F0B52C8EEF1}.Debug|ARM.ActiveCfg = Debug|ARM
+-		{86228196-FC6B-4A2E-AE7E-4F0B52C8EEF1}.Debug|ARM.Build.0 = Debug|ARM
+-		{86228196-FC6B-4A2E-AE7E-4F0B52C8EEF1}.Debug|ARM.Deploy.0 = Debug|ARM
++		{86228196-FC6B-4A2E-AE7E-4F0B52C8EEF1}.Debug|ARM.ActiveCfg = Debug|x86
++		{86228196-FC6B-4A2E-AE7E-4F0B52C8EEF1}.Debug|ARM.Build.0 = Debug|x86
++		{86228196-FC6B-4A2E-AE7E-4F0B52C8EEF1}.Debug|ARM.Deploy.0 = Debug|x86
+ 		{86228196-FC6B-4A2E-AE7E-4F0B52C8EEF1}.Debug|x64.ActiveCfg = Debug|x64
+ 		{86228196-FC6B-4A2E-AE7E-4F0B52C8EEF1}.Debug|x64.Build.0 = Debug|x64
+ 		{86228196-FC6B-4A2E-AE7E-4F0B52C8EEF1}.Debug|x64.Deploy.0 = Debug|x64
+@@ -37,4 +37,7 @@ Global
+ 	GlobalSection(SolutionProperties) = preSolution
+ 		HideSolutionNode = FALSE
+ 	EndGlobalSection
++	GlobalSection(ExtensibilityGlobals) = postSolution
++		SolutionGuid = {390680D4-CDFC-438D-8AA0-2767435B9F4E}
++	EndGlobalSection
+ EndGlobal
+diff --git a/Start-Finance-master/InstaRichie/Models/PersonalInfo.cs b/Start-Finance-master/InstaRichie/Models/PersonalInfo.cs
+new file mode 100644
+index 0000000..19cb911
+--- /dev/null
++++ b/Start-Finance-master/InstaRichie/Models/PersonalInfo.cs
+@@ -0,0 +1,34 @@
++﻿using System;
++using System.Collections.Generic;
++using System.Linq;
++using System.Text;
++using System.Threading.Tasks;
++using SQLite.Net.Attributes;
++
++
++namespace StartFinance.Models
++{
++    public class PersonalInfo
++    {
++        [PrimaryKey, AutoIncrement]
++        public int PersonalID { get; set; }
++
++        [NotNull]
++        public string FirstName { get; set; }
++
++        [NotNull]
++        public string LastName { get; set; }
++
++        [NotNull]
++        public string Email { get; set; }
++
++        [NotNull]
++        public string Phone { get; set; }
++
++        [NotNull]
++        public string DOB { get; set; }
++
++        [NotNull]
++        public string Gender { get; set; }
++    }
++}
+diff --git a/Start-Finance-master/InstaRichie/Views/PersonalInfoPage.xaml b/Start-Finance-master/InstaRichie/Views/PersonalInfoPage.xaml
+new file mode 100644
+index 0000000..6235488
+--- /dev/null
++++ b/Start-Finance-master/InstaRichie/Views/PersonalInfoPage.xaml
+@@ -0,0 +1,129 @@
++﻿<Page
++    x:Class="StartFinance.Views.PersonalInfoPage"
++    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
++    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
++    xmlns:Behaviors="using:Template10.Behaviors"
++    xmlns:Core="using:Microsoft.Xaml.Interactions.Core"
++    xmlns:Interactivity="using:Microsoft.Xaml.Interactivity"
++    xmlns:controls="using:Template10.Controls"
++    xmlns:local="using:StartFinance.Views"
++    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
++    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
++    xmlns:vm="using:StartFinance.ViewModels"
++    mc:Ignorable="d" Width="437.244">
++
++    <Page.Resources>
++        <DataTemplate x:Key="PersonalInfoView">
++            <Grid>
++                <StackPanel Orientation="Horizontal">
++                    <TextBlock Text="{Binding PersonalID}" Padding="0,0,15,0"/>
++                    <TextBlock Text="{Binding FirstName}" Padding="0,0,15,0"/>
++                    <TextBlock Text="{Binding LastName}" Padding="0,0,15,0"/>
++                    <TextBlock Text="{Binding Email}" Padding="0,0,15,0"/>
++                    <TextBlock Text="{Binding Phone}"/>
++                </StackPanel>
++            </Grid>
++        </DataTemplate>
++    </Page.Resources>
++
++    <Page.DataContext>
++        <vm:MainPageViewModel x:Name="ViewModel" />
++    </Page.DataContext>
++
++    <RelativePanel Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
++
++        <VisualStateManager.VisualStateGroups>
++            <VisualStateGroup x:Name="AdaptiveVisualStateGroup">
++                <VisualState x:Name="VisualStateNarrow">
++                    <VisualState.StateTriggers>
++                        <AdaptiveTrigger MinWindowWidth="{StaticResource NarrowMinWidth}" />
++                    </VisualState.StateTriggers>
++                    <VisualState.Setters>
++                        <!--  TODO: change properties for narrow view  -->
++                    </VisualState.Setters>
++                </VisualState>
++                <VisualState x:Name="VisualStateNormal">
++                    <VisualState.StateTriggers>
++                        <AdaptiveTrigger MinWindowWidth="{StaticResource NormalMinWidth}" />
++                    </VisualState.StateTriggers>
++                    <VisualState.Setters>
++                        <!--  TODO: change properties for normal view  -->
++                    </VisualState.Setters>
++                </VisualState>
++                <VisualState x:Name="VisualStateWide">
++                    <VisualState.StateTriggers>
++                        <AdaptiveTrigger MinWindowWidth="{StaticResource WideMinWidth}" />
++                    </VisualState.StateTriggers>
++                    <VisualState.Setters>
++                        
++                    </VisualState.Setters>
++                </VisualState>
++            </VisualStateGroup>
++        </VisualStateManager.VisualStateGroups>
++
++        <controls:PageHeader x:Name="pageHeader" RelativePanel.AlignLeftWithPanel="True"
++			RelativePanel.AlignRightWithPanel="True"
++			RelativePanel.AlignTopWithPanel="True" Text="Personal Information">
++
++            <!--  secondary commands  -->
++            <controls:PageHeader.SecondaryCommands>
++                <AppBarButton Click="{x:Bind ViewModel.GotoSettings}" Label="Settings" />
++                <AppBarButton Click="{x:Bind ViewModel.GotoPrivacy}" Label="Privacy" />
++                <AppBarButton Click="{x:Bind ViewModel.GotoAbout}" Label="About" />
++            </controls:PageHeader.SecondaryCommands>
++        </controls:PageHeader>
++
++        <controls:PageHeader x:Name="pageFooter" RelativePanel.AlignLeftWithPanel="True"
++			RelativePanel.AlignRightWithPanel="True"
++			RelativePanel.AlignBottomWithPanel="True">
++
++            <!--  secondary commands  -->
++            <controls:PageHeader.PrimaryCommands>
++                <AppBarButton Icon="Add" Label="Add Info" Click="AppBarButton_Click"/>
++                <AppBarButton Icon="Edit" Label="Edit Info" Click="EditItem_Click"/>
++                <AppBarButton Icon="Delete" Label="Delete Info" Click="DeleteItem_Click"/>
++            </controls:PageHeader.PrimaryCommands>
++        </controls:PageHeader>
++
++
++        <Pivot Margin="0,0,0.2,0">
++            <RelativePanel.Below>pageHeader</RelativePanel.Below>
++            <RelativePanel.Above>pageFooter</RelativePanel.Above>
++            <PivotItem Header="Information">
++                <Grid>
++                    <Grid.RowDefinitions>
++                        <RowDefinition Height="185"/>
++                        <RowDefinition Height="189*"/>
++                        <RowDefinition Height="250*"/>
++                    </Grid.RowDefinitions>
++                    <StackPanel x:Name="PageStart" Grid.Row="0" VerticalAlignment="Top"
++                        HorizontalAlignment="Stretch"
++                        Orientation="Vertical" Margin="10,5,10,0" Grid.RowSpan="2">
++                        <StackPanel x:Name="fullName" Orientation="Horizontal">
++                            <TextBox x:Name="fName" Header="First Name" PlaceholderText="John" TextWrapping="Wrap" />
++                            <TextBox x:Name="lName" Header="Last Name" PlaceholderText="Smith" TextWrapping="Wrap" />
++                        </StackPanel>
++                        <StackPanel x:Name="details" Orientation="Horizontal">
++                            <TextBox x:Name="email" Header="Email Address" InputScope="EmailNameOrAddress" PlaceholderText="jsmith@gmail.com" TextWrapping="Wrap"/>
++                            <TextBox x:Name="phone" Header="Phone Number" InputScope="TelephoneNumber" PlaceholderText="0400111222" TextWrapping="Wrap"/>
++                        </StackPanel>
++                        <StackPanel x:Name="gender" Orientation="Horizontal">
++                            <TextBlock Text="Gender" />
++                            <RadioButton x:Name="RadBtnM" Content="Male" Tag="male" GroupName="gen" Width="80" IsChecked="True" MinWidth="80" Checked="RadBtnM_Checked" />
++                            <RadioButton x:Name="radBtnF" Content="Female" Tag="female" GroupName="gen" Width="80" MinWidth="80" Checked="RadBtnF_Checked" />
++                        </StackPanel>
++                        <StackPanel x:Name="birth" Orientation="Horizontal">
++                            <CalendarDatePicker x:Name="dob" Header="DOB"/>
++                        </StackPanel>
++                        
++                    </StackPanel>
++                    <ListView x:Name="InfoList" ItemTemplate="{StaticResource PersonalInfoView}"
++                              HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="0,0,0,10" Grid.Row="1" Height="200" Grid.RowSpan="2">
++                        <RelativePanel.Below>PageStart</RelativePanel.Below>
++                    </ListView>
++                </Grid>
++            </PivotItem>
++        </Pivot>
++
++    </RelativePanel>
++</Page>
+diff --git a/Start-Finance-master/InstaRichie/Views/PersonalInfoPage.xaml.cs b/Start-Finance-master/InstaRichie/Views/PersonalInfoPage.xaml.cs
+new file mode 100644
+index 0000000..b18e67d
+--- /dev/null
++++ b/Start-Finance-master/InstaRichie/Views/PersonalInfoPage.xaml.cs
+@@ -0,0 +1,205 @@
++﻿using System;
++using System.Collections.Generic;
++using System.IO;
++using System.Linq;
++using System.Runtime.InteropServices.WindowsRuntime;
++using Windows.Foundation;
++using Windows.Foundation.Collections;
++using Windows.UI.Xaml;
++using Windows.UI.Xaml.Controls;
++using Windows.UI.Xaml.Controls.Primitives;
++using Windows.UI.Xaml.Data;
++using Windows.UI.Xaml.Input;
++using Windows.UI.Xaml.Media;
++using Windows.UI.Xaml.Navigation;
++using Windows.UI.Popups;
++using StartFinance.Models;
++using SQLite.Net;
++
++// The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
++
++namespace StartFinance.Views
++{
++    /// <summary>
++    /// An empty page that can be used on its own or navigated to within a Frame.
++    /// </summary>
++    public sealed partial class PersonalInfoPage : Page
++    {
++        SQLiteConnection conn; // adding an SQLite connection
++        string path = Path.Combine(Windows.Storage.ApplicationData.Current.LocalFolder.Path, "Findata.sqlite");
++        string sex = "";
++
++        public PersonalInfoPage()
++        {
++            this.InitializeComponent();
++            NavigationCacheMode = Windows.UI.Xaml.Navigation.NavigationCacheMode.Enabled;
++            /// Initializing a database
++            conn = new SQLite.Net.SQLiteConnection(new SQLite.Net.Platform.WinRT.SQLitePlatformWinRT(), path);
++
++            // Creating table
++            Results();
++        }
++
++        public void Results()
++        {
++            // Creating table
++            conn.CreateTable<PersonalInfo>();
++            var query = conn.Table<PersonalInfo>();
++            InfoList.ItemsSource = query.ToList();
++        }
++
++        private void RadBtnF_Checked(object sender, RoutedEventArgs e) => sex = "Female";
++
++        private void RadBtnM_Checked(object sender, RoutedEventArgs e) => sex = "Male";
++
++        private async void AppBarButton_Click(object sender, RoutedEventArgs e)
++        {
++            try
++            {
++                // checks if anything is null
++                if (fName.Text.ToString() == "")
++                {
++                    MessageDialog dialog = new MessageDialog("First Name not Entered", "Oops..!");
++                    await dialog.ShowAsync();
++                }
++                else if (lName.Text.ToString() == "")
++                {
++                    MessageDialog dialog = new MessageDialog("Last Name not Entered", "Oops..!");
++                    await dialog.ShowAsync();
++                }
++                else if (email.Text.ToString() == "")
++                {
++                    MessageDialog dialog = new MessageDialog("Email Address not Entered", "Oops..!");
++                    await dialog.ShowAsync();
++                }
++                else if (phone.Text.ToString() == "")
++                {
++                    MessageDialog dialog = new MessageDialog("Phone Number not Entered", "Oops..!");
++                    await dialog.ShowAsync();
++                }
++                else if (dob.CalendarIdentifier.ToString() == "")
++                {
++                    MessageDialog dialog = new MessageDialog("Date of Birth not Selected", "Oops..!");
++                    await dialog.ShowAsync();
++                }
++                else
++                {   // Inserts the data
++                    conn.Insert(new PersonalInfo()
++                    {
++                        FirstName = fName.Text,
++                        LastName = lName.Text,
++                        Email = email.Text,
++                        Phone = phone.Text,
++                        DOB = dob.ToString(),
++                        Gender = sex
++                    });
++                    Results();
++                }
++
++            }
++            catch (Exception ex)
++            {   // Exception to display when email i not valid or numbers not entered for phone
++                if (ex is FormatException)
++                {
++                    MessageDialog dialog = new MessageDialog("You have entered invalid data", "Oops..!");
++                    await dialog.ShowAsync();
++                }   // Exception handling when SQLite contraints are violated
++                else if (ex is SQLiteException)
++                {
++                    MessageDialog dialog = new MessageDialog("Account Name already exist, Try Different Name", "Oops..!");
++                    await dialog.ShowAsync();
++                }
++                else
++                {
++                    /// no idea
++                }
++
++            }
++        }
++
++        
++        private async void EditItem_Click(object sender, RoutedEventArgs e)
++        {
++            MessageDialog ShowConf = new MessageDialog("Do you wish to edit?", "Important");
++            ShowConf.Commands.Add(new UICommand("Yes, Edit")
++            {
++                Id = 0
++            });
++            ShowConf.Commands.Add(new UICommand("Cancel")
++            {
++                Id = 1
++            });
++            ShowConf.DefaultCommandIndex = 0;
++            ShowConf.CancelCommandIndex = 1;
++
++            var result = await ShowConf.ShowAsync();
++            if ((int)result.Id == 0)
++            {
++                // checks if data is null else inserts
++                try
++                {
++                    fName.Text = ((PersonalInfo)InfoList.SelectedItem).FirstName;
++                    lName.Text = ((PersonalInfo)InfoList.SelectedItem).LastName;
++                    email.Text = ((PersonalInfo)InfoList.SelectedItem).Email;
++                    phone.Text = ((PersonalInfo)InfoList.SelectedItem).Phone;
++                    dob.DateFormat = ((PersonalInfo)InfoList.SelectedItem).DOB;
++
++                    //var querydel = conn.Query<PersonalInfo>("DELETE FROM PersonalInfo WHERE FirstName = '" + first + "' and LastName = '" + last + "'");
++                    Results();
++                }
++                catch (NullReferenceException)
++                {
++                    MessageDialog ClearDialog = new MessageDialog("Please select the item to Delete", "Oops..!");
++                    await ClearDialog.ShowAsync();
++                }
++            }
++            else
++            {
++                //
++            }
++        }
++
++        // Displays the data when navigation between pages
++        private void Page_Loaded(object sender, RoutedEventArgs e)
++        {
++            Results();
++        }
++
++        private async void DeleteItem_Click(object sender, RoutedEventArgs e)
++        {
++            MessageDialog ShowConf = new MessageDialog("Do you wish to delete?", "Important");
++            ShowConf.Commands.Add(new UICommand("Yes, Delete")
++            {
++                Id = 0
++            });
++            ShowConf.Commands.Add(new UICommand("Cancel")
++            {
++                Id = 1
++            });
++            ShowConf.DefaultCommandIndex = 0;
++            ShowConf.CancelCommandIndex = 1;
++
++            var result = await ShowConf.ShowAsync();
++            if ((int)result.Id == 0)
++            {
++                // checks if data is null else inserts
++                try
++                {
++                    string first = ((PersonalInfo)InfoList.SelectedItem).FirstName;
++                    string last = ((PersonalInfo)InfoList.SelectedItem).LastName;
++                    var querydel = conn.Query<PersonalInfo>("DELETE FROM PersonalInfo WHERE FirstName = '" + first + "' and LastName = '" + last + "'");
++                    Results();
++                }
++                catch (NullReferenceException)
++                {
++                    MessageDialog ClearDialog = new MessageDialog("Please select the item to Delete", "Oops..!");
++                    await ClearDialog.ShowAsync();
++                }
++            }
++            else
++            {
++                //
++            }
++        }
++    }
++}
+\ No newline at end of file
+-- 
+2.11.0.windows.1
+

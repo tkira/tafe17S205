@@ -1,0 +1,91 @@
+From c36fc6a981a122e06f02545ffd533d4cccb1e019 Mon Sep 17 00:00:00 2001
+From: Tung <tung.dang@student.tafesa.edu.au>
+Date: Mon, 18 Sep 2017 17:37:03 +0930
+Subject: [PATCH 01/18] commit progress1 changes of Start Finance.csproj and
+ Shell.xaml
+
+---
+ Start-Finance-master/InstaRichie/Start Finance.csproj | 15 ++++++++-------
+ Start-Finance-master/InstaRichie/Views/Shell.xaml     | 12 ++++++++++++
+ 2 files changed, 20 insertions(+), 7 deletions(-)
+
+diff --git a/Start-Finance-master/InstaRichie/Start Finance.csproj b/Start-Finance-master/InstaRichie/Start Finance.csproj
+index 066bed3..a4fe223 100644
+--- a/Start-Finance-master/InstaRichie/Start Finance.csproj	
++++ b/Start-Finance-master/InstaRichie/Start Finance.csproj	
+@@ -102,6 +102,7 @@
+       <DependentUpon>App.xaml</DependentUpon>
+     </Compile>
+     <Compile Include="Models\Accounts.cs" />
++    <Compile Include="Models\Appointments.cs" />
+     <Compile Include="Models\Assets.cs" />
+     <Compile Include="Models\Category.cs" />
+     <Compile Include="Models\Debt.cs" />
+@@ -116,6 +117,9 @@
+     <Compile Include="Views\AccountsPage.xaml.cs">
+       <DependentUpon>AccountsPage.xaml</DependentUpon>
+     </Compile>
++    <Compile Include="Views\AppointmentsPage.xaml.cs">
++      <DependentUpon>AppointmentsPage.xaml</DependentUpon>
++    </Compile>
+     <Compile Include="Views\AssetsPage.xaml.cs">
+       <DependentUpon>AssetsPage.xaml</DependentUpon>
+     </Compile>
+@@ -131,9 +135,6 @@
+     <Compile Include="Views\DetailPage.xaml.cs">
+       <DependentUpon>DetailPage.xaml</DependentUpon>
+     </Compile>
+-    <Compile Include="Views\MainPage.xaml.cs">
+-      <DependentUpon>MainPage.xaml</DependentUpon>
+-    </Compile>
+     <Compile Include="Views\SettingsPage.xaml.cs">
+       <DependentUpon>SettingsPage.xaml</DependentUpon>
+     </Compile>
+@@ -185,6 +186,10 @@
+       <SubType>Designer</SubType>
+       <Generator>MSBuild:Compile</Generator>
+     </Page>
++    <Page Include="Views\AppointmentsPage.xaml">
++      <SubType>Designer</SubType>
++      <Generator>MSBuild:Compile</Generator>
++    </Page>
+     <Page Include="Views\AssetsPage.xaml">
+       <SubType>Designer</SubType>
+       <Generator>MSBuild:Compile</Generator>
+@@ -205,10 +210,6 @@
+       <SubType>Designer</SubType>
+       <Generator>MSBuild:Compile</Generator>
+     </Page>
+-    <Page Include="Views\MainPage.xaml">
+-      <Generator>MSBuild:Compile</Generator>
+-      <SubType>Designer</SubType>
+-    </Page>
+     <Page Include="Views\SettingsPage.xaml">
+       <SubType>Designer</SubType>
+       <Generator>MSBuild:Compile</Generator>
+diff --git a/Start-Finance-master/InstaRichie/Views/Shell.xaml b/Start-Finance-master/InstaRichie/Views/Shell.xaml
+index 4f716e0..7d41a4f 100644
+--- a/Start-Finance-master/InstaRichie/Views/Shell.xaml
++++ b/Start-Finance-master/InstaRichie/Views/Shell.xaml
+@@ -98,6 +98,18 @@
+                                Text="WishList" />
+                 </StackPanel>
+             </Controls:HamburgerButtonInfo>
++
++            <!--  Appointment button  -->
++            <Controls:HamburgerButtonInfo ClearHistory="True" PageType="views:AppointmentsPage" 
++                                          AutomationProperties.Name="Jerry"
++                                          >
++                <StackPanel Orientation="Horizontal">
++                    <SymbolIcon Width="48" Height="48"
++                		Symbol="Calendar" />
++                    <TextBlock Margin="12,0,0,0" VerticalAlignment="Center"
++                               Text="Appointments" />
++                </StackPanel>
++            </Controls:HamburgerButtonInfo>
+         </Controls:HamburgerMenu.PrimaryButtons>
+ 
+         <Controls:HamburgerMenu.SecondaryButtons>
+-- 
+2.11.0.windows.1
+

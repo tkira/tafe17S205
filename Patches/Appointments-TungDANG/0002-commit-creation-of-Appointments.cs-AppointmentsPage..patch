@@ -1,0 +1,247 @@
+From fef149f82715a6d66ce23c659939a14e08a84240 Mon Sep 17 00:00:00 2001
+From: Tung <tung.dang@student.tafesa.edu.au>
+Date: Mon, 18 Sep 2017 17:37:59 +0930
+Subject: [PATCH 02/18] commit creation of Appointments.cs,
+ AppointmentsPage.xaml, AppointmentsPage.xaml.cs
+
+---
+ .../InstaRichie/Models/Appointments.cs             |  28 +++++
+ .../InstaRichie/Views/AppointmentsPage.xaml        | 116 +++++++++++++++++++++
+ .../InstaRichie/Views/AppointmentsPage.xaml.cs     |  66 ++++++++++++
+ 3 files changed, 210 insertions(+)
+ create mode 100644 Start-Finance-master/InstaRichie/Models/Appointments.cs
+ create mode 100644 Start-Finance-master/InstaRichie/Views/AppointmentsPage.xaml
+ create mode 100644 Start-Finance-master/InstaRichie/Views/AppointmentsPage.xaml.cs
+
+diff --git a/Start-Finance-master/InstaRichie/Models/Appointments.cs b/Start-Finance-master/InstaRichie/Models/Appointments.cs
+new file mode 100644
+index 0000000..49a31d0
+--- /dev/null
++++ b/Start-Finance-master/InstaRichie/Models/Appointments.cs
+@@ -0,0 +1,28 @@
++﻿using System;
++using System.Collections.Generic;
++using System.Linq;
++using System.Text;
++using System.Threading.Tasks;
++using SQLite.Net.Attributes;
++
++namespace StartFinance.Models
++{
++    class Appointments
++    {
++        [PrimaryKey, AutoIncrement]
++        public int AppointmentID { get; set; }
++
++        [Unique]
++        public string EventName { get; set; }
++
++        [NotNull]
++        public DateTime EventDate { get; set; }
++
++        [NotNull]
++        public DateTime StartTime { get; set; }
++
++        [NotNull]
++        public DateTime EndTime { get; set; }
++
++    }
++}
+diff --git a/Start-Finance-master/InstaRichie/Views/AppointmentsPage.xaml b/Start-Finance-master/InstaRichie/Views/AppointmentsPage.xaml
+new file mode 100644
+index 0000000..7c0e5ad
+--- /dev/null
++++ b/Start-Finance-master/InstaRichie/Views/AppointmentsPage.xaml
+@@ -0,0 +1,116 @@
++﻿<Page
++    x:Class="StartFinance.Views.AppointmentsPage"
++    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
++    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
++    xmlns:Behaviors="using:Template10.Behaviors"
++    xmlns:Core="using:Microsoft.Xaml.Interactions.Core"
++    xmlns:Interactivity="using:Microsoft.Xaml.Interactivity"
++    xmlns:controls="using:Template10.Controls"
++    xmlns:local="using:StartFinance.Views"
++    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
++    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
++    xmlns:vm="using:StartFinance.ViewModels"
++    mc:Ignorable="d">
++    <!-- Loaded="Page_Loaded"  -->
++
++    <Page.Resources>
++        <DataTemplate x:Key="TransListView">
++            <Grid>
++                <StackPanel Orientation="Horizontal">
++                    <TextBlock Text="{Binding ID}" Padding="0,0,15,0"/>
++                    <TextBlock Text="{Binding AccountName}" Padding="0,0,15,0"/>
++                    <TextBlock Text="{Binding InitialAmount}" Padding="0,0,15,0"/>
++                    <TextBlock Text="{Binding OverDraft}"/>
++                </StackPanel>
++            </Grid>
++        </DataTemplate>
++    </Page.Resources>
++
++    <Page.DataContext>
++        <vm:MainPageViewModel x:Name="ViewModel" />
++    </Page.DataContext>
++
++    <RelativePanel Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
++
++            <VisualStateManager.VisualStateGroups>
++                <VisualStateGroup x:Name="AdaptiveVisualStateGroup">
++                    <VisualState x:Name="VisualStateNarrow">
++                        <VisualState.StateTriggers>
++                            <AdaptiveTrigger MinWindowWidth="{StaticResource NarrowMinWidth}" />
++                        </VisualState.StateTriggers>
++                        <VisualState.Setters>
++                            <!--  TODO: change properties for narrow view  -->
++                        </VisualState.Setters>
++                    </VisualState>
++                    <VisualState x:Name="VisualStateNormal">
++                        <VisualState.StateTriggers>
++                            <AdaptiveTrigger MinWindowWidth="{StaticResource NormalMinWidth}" />
++                        </VisualState.StateTriggers>
++                        <VisualState.Setters>
++                            <!--  TODO: change properties for normal view  -->
++                        </VisualState.Setters>
++                    </VisualState>
++                    <VisualState x:Name="VisualStateWide">
++                        <VisualState.StateTriggers>
++                            <AdaptiveTrigger MinWindowWidth="{StaticResource WideMinWidth}" />
++                        </VisualState.StateTriggers>
++                        <VisualState.Setters>
++                            <!--  TODO: change properties for wide view  -->
++                        </VisualState.Setters>
++                    </VisualState>
++                </VisualStateGroup>
++            </VisualStateManager.VisualStateGroups>
++
++            <controls:PageHeader x:Name="pageHeader" RelativePanel.AlignLeftWithPanel="True"
++			RelativePanel.AlignRightWithPanel="True"
++			RelativePanel.AlignTopWithPanel="True" Text="Add/Remove Appointments">
++
++                <!--  secondary commands  -->
++                <controls:PageHeader.SecondaryCommands>
++                    <AppBarButton Click="{x:Bind ViewModel.GotoSettings}" Label="Settings" />
++                    <AppBarButton Click="{x:Bind ViewModel.GotoPrivacy}" Label="Privacy" />
++                    <AppBarButton Click="{x:Bind ViewModel.GotoAbout}" Label="About" />
++                </controls:PageHeader.SecondaryCommands>
++            </controls:PageHeader>
++
++            <controls:PageHeader x:Name="pageFooter" RelativePanel.AlignLeftWithPanel="True"
++			RelativePanel.AlignRightWithPanel="True"
++			RelativePanel.AlignBottomWithPanel="True">
++
++                <!--  secondary commands  -->
++                <controls:PageHeader.PrimaryCommands>
++                    <AppBarButton Icon="Add" Label="Add Appointment" Click="AppBarButton_Click" />
++                    <AppBarButton Icon="Delete" Label="Delete Appointment" Click="DeleteItem_Click" />
++                </controls:PageHeader.PrimaryCommands>
++            </controls:PageHeader>
++
++
++        <Pivot>
++            <RelativePanel.Below>pageHeader</RelativePanel.Below>
++            <RelativePanel.Above>pageFooter</RelativePanel.Above>
++            <PivotItem Header="Appointments">
++                <Grid>
++                    <Grid.RowDefinitions>
++                        <RowDefinition Height="185"/>
++                        <RowDefinition Height="*"/>
++                    </Grid.RowDefinitions>
++                    <StackPanel x:Name="PageStart" Grid.Row="0" VerticalAlignment="Top"
++                        HorizontalAlignment="Stretch"
++                        Orientation="Vertical" Margin="10,5,10,0">
++                        <TextBox x:Name="eventName" Header="Event Name" PlaceholderText="Event" TextWrapping="Wrap"/>
++                        <TextBox x:Name="MoneyIn" Header="Initial Amount" PlaceholderText="100.00" InputScope="Number" TextWrapping="Wrap"/>
++                        <ToggleSwitch x:Name="overdraft" Header="Enable Overdraft"
++                                      HorizontalAlignment="Stretch" ToolTipService.Placement="Mouse"
++                                      ToolTipService.ToolTip="Mostly used for Credit Cards"
++                                      VerticalAlignment="Stretch"/>
++
++                    </StackPanel>
++                    <ListView x:Name="AppointmentList" Grid.Row="1" ItemTemplate="{StaticResource TransListView}"
++                              HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
++                        <RelativePanel.Below>PageStart</RelativePanel.Below>
++                    </ListView>
++                </Grid>
++            </PivotItem>
++        </Pivot>
++    </RelativePanel>
++</Page>
+diff --git a/Start-Finance-master/InstaRichie/Views/AppointmentsPage.xaml.cs b/Start-Finance-master/InstaRichie/Views/AppointmentsPage.xaml.cs
+new file mode 100644
+index 0000000..b928996
+--- /dev/null
++++ b/Start-Finance-master/InstaRichie/Views/AppointmentsPage.xaml.cs
+@@ -0,0 +1,66 @@
++﻿using System;
++using System.Collections.Generic;
++using System.IO;
++using System.Linq;
++using System.Runtime.InteropServices.WindowsRuntime;
++using Windows.Foundation;
++using Windows.Foundation.Collections;
++using Windows.UI.Xaml;
++using Windows.UI.Xaml.Controls;
++using Windows.UI.Xaml.Controls.Primitives;
++using Windows.UI.Xaml.Data;
++using Windows.UI.Xaml.Input;
++using Windows.UI.Xaml.Media;
++using Windows.UI.Xaml.Navigation;
++using Windows.UI.Popups;
++using StartFinance.Models;
++using SQLite.Net;
++
++// The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
++
++namespace StartFinance.Views
++{
++    /// <summary>
++    /// An empty page that can be used on its own or navigated to within a Frame.
++    /// </summary>
++    public sealed partial class AppointmentsPage : Page
++    {
++        SQLiteConnection conn; // adding an SQLite connection
++        string path = Path.Combine(Windows.Storage.ApplicationData.Current.LocalFolder.Path, "Findata.sqlite");
++
++        public AppointmentsPage()
++        {
++            this.InitializeComponent();
++            NavigationCacheMode = Windows.UI.Xaml.Navigation.NavigationCacheMode.Enabled;
++            /// Initializing a database
++            conn = new SQLite.Net.SQLiteConnection(new SQLite.Net.Platform.WinRT.SQLitePlatformWinRT(), path);
++
++            // Creating table
++            Results();
++        }
++
++        public void Results()
++        {
++            // Creating table
++            conn.CreateTable<Appointments>();
++            var query = conn.Table<Appointments>();
++            AppointmentList.ItemsSource = query.ToList();
++        }
++
++        private async void AppBarButton_Click(object sender, RoutedEventArgs e)
++        {
++
++        }
++
++        private async void DeleteItem_Click(object sender, RoutedEventArgs e)
++        {
++
++        }
++    }
++
++    // Displays the data when navigation between pages
++    //private void Page_Loaded(object sender, RoutedEventArgs e)
++   // {
++    //    Results();
++   // }
++}
+\ No newline at end of file
+-- 
+2.11.0.windows.1
+

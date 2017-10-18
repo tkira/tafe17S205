@@ -1,0 +1,347 @@
+From 072fda2f89189cef692cb89255d32f56a47a5032 Mon Sep 17 00:00:00 2001
+From: Ye Lin <erenst2002@hotmail.com>
+Date: Sat, 23 Sep 2017 20:08:06 +0930
+Subject: [PATCH 08/18] ShopingList Completed
+
+ShopingList Completed
+---
+ .../InstaRichie/Models/ShoppingList.cs             | 28 +++++++++++++
+ .../InstaRichie/Start Finance.csproj               |  7 ++--
+ .../InstaRichie/Views/DashBoardPage.xaml           | 14 ++++---
+ .../InstaRichie/Views/DashBoardPage.xaml.cs        |  9 ++--
+ Start-Finance-master/InstaRichie/Views/Shell.xaml  |  2 +-
+ .../{AssetsPage.xaml => ShoppingListPage.xaml}     | 27 +++++++-----
+ ...AssetsPage.xaml.cs => ShoppingListPage.xaml.cs} | 48 ++++++++++++----------
+ 7 files changed, 89 insertions(+), 46 deletions(-)
+ create mode 100644 Start-Finance-master/InstaRichie/Models/ShoppingList.cs
+ rename Start-Finance-master/InstaRichie/Views/{AssetsPage.xaml => ShoppingListPage.xaml} (84%)
+ rename Start-Finance-master/InstaRichie/Views/{AssetsPage.xaml.cs => ShoppingListPage.xaml.cs} (69%)
+
+diff --git a/Start-Finance-master/InstaRichie/Models/ShoppingList.cs b/Start-Finance-master/InstaRichie/Models/ShoppingList.cs
+new file mode 100644
+index 0000000..542a738
+--- /dev/null
++++ b/Start-Finance-master/InstaRichie/Models/ShoppingList.cs
+@@ -0,0 +1,28 @@
++﻿using System;
++using System.Collections.Generic;
++using System.Linq;
++using System.Text;
++using System.Threading.Tasks;
++using SQLite.Net.Attributes;
++
++namespace StartFinance.Models
++{
++    class ShoppingList
++    {
++
++        [PrimaryKey, AutoIncrement]
++        public int ID { get; set; }
++
++        [Unique]
++        public string ShoppingItemID { get; set; }
++
++        [NotNull]
++        public string ShoppingDate { get; set; }
++
++        [NotNull]
++        public string NameOfItem { get; set; }
++
++        [NotNull]
++        public double PriceQuoted { get; set; }
++    }
++}
+diff --git a/Start-Finance-master/InstaRichie/Start Finance.csproj b/Start-Finance-master/InstaRichie/Start Finance.csproj
+index 066bed3..63b05eb 100644
+--- a/Start-Finance-master/InstaRichie/Start Finance.csproj	
++++ b/Start-Finance-master/InstaRichie/Start Finance.csproj	
+@@ -105,6 +105,7 @@
+     <Compile Include="Models\Assets.cs" />
+     <Compile Include="Models\Category.cs" />
+     <Compile Include="Models\Debt.cs" />
++    <Compile Include="Models\ShoppingList.cs" />
+     <Compile Include="Models\Transactions.cs" />
+     <Compile Include="Models\WishList.cs" />
+     <Compile Include="Properties\AssemblyInfo.cs" />
+@@ -116,8 +117,8 @@
+     <Compile Include="Views\AccountsPage.xaml.cs">
+       <DependentUpon>AccountsPage.xaml</DependentUpon>
+     </Compile>
+-    <Compile Include="Views\AssetsPage.xaml.cs">
+-      <DependentUpon>AssetsPage.xaml</DependentUpon>
++    <Compile Include="Views\ShoppingListPage.xaml.cs">
++      <DependentUpon>ShoppingListPage.xaml</DependentUpon>
+     </Compile>
+     <Compile Include="Views\Busy.xaml.cs">
+       <DependentUpon>Busy.xaml</DependentUpon>
+@@ -185,7 +186,7 @@
+       <SubType>Designer</SubType>
+       <Generator>MSBuild:Compile</Generator>
+     </Page>
+-    <Page Include="Views\AssetsPage.xaml">
++    <Page Include="Views\ShoppingListPage.xaml">
+       <SubType>Designer</SubType>
+       <Generator>MSBuild:Compile</Generator>
+     </Page>
+diff --git a/Start-Finance-master/InstaRichie/Views/DashBoardPage.xaml b/Start-Finance-master/InstaRichie/Views/DashBoardPage.xaml
+index 826671b..277123d 100644
+--- a/Start-Finance-master/InstaRichie/Views/DashBoardPage.xaml
++++ b/Start-Finance-master/InstaRichie/Views/DashBoardPage.xaml
+@@ -34,11 +34,13 @@
+     </Page.DataContext>
+ 
+     <Page.Resources>
+-        <DataTemplate x:Key="AssetListDataViews">
++        <DataTemplate x:Key="ShoppingListDataViews">
+             <Grid>
+                 <StackPanel Orientation="Horizontal">
+-                    <TextBlock Text="{Binding AssetName}" Style="{ThemeResource SubheaderTextBlockStyle}" Padding="0,0,15,0"/>
+-                    <TextBlock Text="{Binding AssetValue}" Style="{ThemeResource SubheaderTextBlockStyle}"/>
++                    <TextBlock Text="{Binding ShoppingItemID}" Padding="0,0,15,0"/>
++                    <TextBlock Text="{Binding ShoppingDate}" Padding="0,0,15,0"/>
++                    <TextBlock Text="{Binding NameOfItem}" Padding="0,0,15,0"/>
++                    <TextBlock Text="{Binding PriceQuoted}" Padding="0,0,15,0"/>
+                 </StackPanel>
+             </Grid>
+         </DataTemplate>
+@@ -189,11 +191,11 @@
+ 
+                         <Grid x:Name="WishList" Grid.Row="1" Grid.Column="1">
+                             <Pivot>
+-                                <PivotItem Header="Assets List">
++                                <PivotItem Header="Shopping List">
+                                     <Grid>
+-                                        <ListView x:Name="Assetme" HorizontalAlignment="Stretch"
++                                        <ListView x:Name="ShoppingListView" HorizontalAlignment="Stretch"
+                                       VerticalAlignment="Stretch" BorderBrush="White" BorderThickness="2"
+-                                      ItemTemplate="{StaticResource AssetListDataViews}">
++                                      ItemTemplate="{StaticResource ShoppingListDataViews}">
+                                         </ListView>
+                                     </Grid>
+                                 </PivotItem>
+diff --git a/Start-Finance-master/InstaRichie/Views/DashBoardPage.xaml.cs b/Start-Finance-master/InstaRichie/Views/DashBoardPage.xaml.cs
+index 693912b..4090e5e 100644
+--- a/Start-Finance-master/InstaRichie/Views/DashBoardPage.xaml.cs
++++ b/Start-Finance-master/InstaRichie/Views/DashBoardPage.xaml.cs
+@@ -62,7 +62,8 @@ namespace StartFinance.Views
+         {
+             Calculations nnn = new Calculations();
+             AccountTotal.Text = "Accounts: " + nnn.AccountTotal().ToString();
+-            Assets.Text = "Assets: " + nnn.AssetCalculation().ToString();
++            // Assets.Text = "Assets: " + nnn.AssetCalculation().ToString();
++            Assets.Text = "0";
+             CreditRatio.Text = "Credit Rating: " + nnn.CreditRatio().ToString();
+             Debts.Text = "Debts: " + nnn.DebtCalculation().ToString();
+             FullTotal.Text = "Total : " + nnn.FullValuation().ToString();
+@@ -71,9 +72,9 @@ namespace StartFinance.Views
+             MonthlyData.Text = "Monthly : " + nnn.MonthlyStatus().ToString();
+             RatioReportTxt.Text = nnn.RatioReport();
+ 
+-            conn.CreateTable<Assets>();
+-            var query1 = conn.Table<Assets>();
+-            Assetme.ItemsSource = query1.ToList();
++            conn.CreateTable<ShoppingList>();
++            var query1 = conn.Table<ShoppingList>();
++            ShoppingListView.ItemsSource = query1.ToList();
+         }
+ 
+     }
+diff --git a/Start-Finance-master/InstaRichie/Views/Shell.xaml b/Start-Finance-master/InstaRichie/Views/Shell.xaml
+index 4f716e0..8bb5c6a 100644
+--- a/Start-Finance-master/InstaRichie/Views/Shell.xaml
++++ b/Start-Finance-master/InstaRichie/Views/Shell.xaml
+@@ -63,7 +63,7 @@
+             </Controls:HamburgerButtonInfo>
+ 
+             <!--  Assets button  -->
+-            <Controls:HamburgerButtonInfo ClearHistory="True" PageType="views:AssetsPage" 
++            <Controls:HamburgerButtonInfo ClearHistory="True" PageType="views:ShoppingListPage" 
+                                           AutomationProperties.Name="Jerry"
+                                           >
+                 <StackPanel Orientation="Horizontal">
+diff --git a/Start-Finance-master/InstaRichie/Views/AssetsPage.xaml b/Start-Finance-master/InstaRichie/Views/ShoppingListPage.xaml
+similarity index 84%
+rename from Start-Finance-master/InstaRichie/Views/AssetsPage.xaml
+rename to Start-Finance-master/InstaRichie/Views/ShoppingListPage.xaml
+index c440c30..65e2cab 100644
+--- a/Start-Finance-master/InstaRichie/Views/AssetsPage.xaml
++++ b/Start-Finance-master/InstaRichie/Views/ShoppingListPage.xaml
+@@ -15,7 +15,7 @@
+ -->
+ 
+ <Page
+-    x:Class="StartFinance.Views.AssetsPage"
++    x:Class="StartFinance.Views.ShoppingListPage"
+       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+       xmlns:Behaviors="using:Template10.Behaviors"
+@@ -29,12 +29,14 @@
+       xmlns:vm="using:StartFinance.ViewModels" mc:Ignorable="d">
+ 
+     <Page.Resources>
+-        <DataTemplate x:Key="AssetListDatavalue">
++        <DataTemplate x:Key="ShoppingListDataValue">
+             <Grid>
+                 <StackPanel Orientation="Horizontal">
+-                    <TextBlock Text="{Binding ID}" Padding="0,0,15,0"/>
+-                    <TextBlock Text="{Binding AssetName}" Padding="0,0,15,0"/>
+-                    <TextBlock Text="{Binding AssetValue}" Padding="0,0,15,0"/>
++                    
++                    <TextBlock Text="{Binding ShoppingItemID}" Padding="0,0,15,0"/>
++                    <TextBlock Text="{Binding ShoppingDate}" Padding="0,0,15,0"/>
++                    <TextBlock Text="{Binding NameOfItem}" Padding="0,0,15,0"/>
++                    <TextBlock Text="{Binding PriceQuoted}" Padding="0,0,15,0"/>
+                 </StackPanel>
+             </Grid>
+         </DataTemplate>
+@@ -106,21 +108,24 @@
+         <Pivot>
+             <RelativePanel.Below>pageHeader</RelativePanel.Below>
+             <RelativePanel.Above>pageFooter</RelativePanel.Above>
+-            <PivotItem Header="Assets">
++            <PivotItem Header="Shopping List">
+                 <Grid>
+                     <Grid.RowDefinitions>
+-                        <RowDefinition Height="150"/>
++                        <RowDefinition Height="300"/>
+                         <RowDefinition Height="*"/>
+                     </Grid.RowDefinitions>
+                     <StackPanel x:Name="pageStart" Grid.Row="0" VerticalAlignment="Top"
+                                 HorizontalAlignment="Stretch"
+                                 Orientation="Vertical" Margin="10,0,10,0">
+-                        <TextBox x:Name="AssetNameText" PlaceholderText="Car, House, Valuables" Header="Asset Name"/>
+-                        <TextBox x:Name="AssetValue" PlaceholderText="100.00" TextWrapping="Wrap" InputScope="Number" Header="Asset Value"/>
++                        <TextBox x:Name="ShoppingItemIDText" PlaceholderText="" Header="Shopping Item ID"/>
++                        <TextBox x:Name="ShoppingDateText" PlaceholderText="dd/mm/yyyy" TextWrapping="Wrap" Header="Shopping Date"/>
++                        <TextBox x:Name="NameOfItemText" PlaceholderText="" Header="Name of Item"/>
++                        <TextBox x:Name="PriceQuotedText" PlaceholderText="0.00" InputScope="Number" Header="Price Quoted"/>
++                        
+                     </StackPanel>
+-                    <ListView x:Name="AssetListView" Grid.Row="1" HorizontalAlignment="Stretch"
++                    <ListView x:Name="ShoppingListView" Grid.Row="1" HorizontalAlignment="Stretch"
+                                 VerticalAlignment="Stretch"
+-                                ItemTemplate="{StaticResource AssetListDatavalue}">
++                                ItemTemplate="{StaticResource ShoppingListDataValue}">
+                         <RelativePanel.Below>pageStart</RelativePanel.Below>
+                     </ListView>
+                 </Grid>
+diff --git a/Start-Finance-master/InstaRichie/Views/AssetsPage.xaml.cs b/Start-Finance-master/InstaRichie/Views/ShoppingListPage.xaml.cs
+similarity index 69%
+rename from Start-Finance-master/InstaRichie/Views/AssetsPage.xaml.cs
+rename to Start-Finance-master/InstaRichie/Views/ShoppingListPage.xaml.cs
+index d475365..7896d01 100644
+--- a/Start-Finance-master/InstaRichie/Views/AssetsPage.xaml.cs
++++ b/Start-Finance-master/InstaRichie/Views/ShoppingListPage.xaml.cs
+@@ -42,12 +42,12 @@ namespace StartFinance.Views
+     /// <summary>
+     /// An empty page that can be used on its own or navigated to within a Frame.
+     /// </summary>
+-    public sealed partial class AssetsPage : Page
++    public sealed partial class ShoppingListPage : Page
+     {
+         SQLiteConnection conn; // adding an SQLite connection
+         string path = Path.Combine(Windows.Storage.ApplicationData.Current.LocalFolder.Path, "Findata.sqlite");
+ 
+-        public AssetsPage()
++        public ShoppingListPage()
+         {
+             this.InitializeComponent();
+             NavigationCacheMode = Windows.UI.Xaml.Navigation.NavigationCacheMode.Enabled;
+@@ -59,28 +59,32 @@ namespace StartFinance.Views
+         public void Results()
+         {
+             // Creating table
+-            conn.CreateTable<Assets>();
++            conn.CreateTable<ShoppingList>();
+ 
+             /// Refresh Data
+-            var query = conn.Table<Assets>();
+-            AssetListView.ItemsSource = query.ToList();
++            var query = conn.Table<ShoppingList>();
++            
++            ShoppingListView.ItemsSource = query.ToList();
+         }
+ 
+         private async void AddData(object sender, RoutedEventArgs e)
+         {
+             try
+             {
+-                if (AssetNameText.Text.ToString() == "")
++                if (ShoppingItemIDText.Text.ToString() == ""|| ShoppingDateText.Text.ToString() == ""|| NameOfItemText.Text.ToString() == ""||
++                    PriceQuotedText.Text.ToString() == "")
+                 {
+-                    MessageDialog dialog = new MessageDialog("No Account Name entered", "Oops..!");
++                    MessageDialog dialog = new MessageDialog("All fields must be entered", "Oops..!");
+                     await dialog.ShowAsync();
+                 }
+                 else
+                 {
+-                    conn.Insert(new Assets()
++                    conn.Insert(new ShoppingList()
+                     {
+-                        AssetName = AssetNameText.Text,
+-                        AssetValue = Convert.ToDouble(AssetValue.Text)
++                        ShoppingItemID = ShoppingItemIDText.Text.ToString(),
++                        ShoppingDate = ShoppingDateText.Text.ToString(),
++                        NameOfItem = NameOfItemText.Text.ToString(),
++                        PriceQuoted = Convert.ToDouble(PriceQuotedText.Text.ToString())
+                     });
+                     Results();
+                 }
+@@ -89,12 +93,12 @@ namespace StartFinance.Views
+             {
+                 if (ex is FormatException)
+                 {
+-                    MessageDialog dialog = new MessageDialog("You forgot to enter the Value or entered an invalid data", "Oops..!");
++                    MessageDialog dialog = new MessageDialog("You forgot to enter the Price Quoted or entered an invalid data", "Oops..!");
+                     await dialog.ShowAsync();
+                 }
+                 else if (ex is SQLiteException)
+                 {
+-                    MessageDialog dialog = new MessageDialog("A Similar Asset Nane already exists, Try a different name", "Oops..!");
++                    MessageDialog dialog = new MessageDialog("A Similar ShoppingItemID already exists, Try a different td", "Oops..!");
+                     await dialog.ShowAsync();
+                 }
+             }
+@@ -102,8 +106,10 @@ namespace StartFinance.Views
+ 
+         private async void ClearFileds_Click(object sender, RoutedEventArgs e)
+         {
+-            AssetNameText.Text = string.Empty;
+-            AssetValue.Text = string.Empty;
++            ShoppingItemIDText.Text = string.Empty;
++            ShoppingDateText.Text = string.Empty;
++            NameOfItemText.Text = string.Empty;
++            PriceQuotedText.Text = string.Empty;
+ 
+             MessageDialog ClearDialog = new MessageDialog("Cleared", "information");
+             await ClearDialog.ShowAsync();
+@@ -118,18 +124,18 @@ namespace StartFinance.Views
+         {
+             try
+             {
+-                string AccSelection = ((Assets)AssetListView.SelectedItem).AssetName;
+-                if (AccSelection == "")
++                string listSeleccted = ((ShoppingList)ShoppingListView.SelectedItem).ShoppingItemID;
++                if (listSeleccted == "")
+                 {
+-                    MessageDialog dialog = new MessageDialog("Not selected the Item", "Oops..!");
++                    MessageDialog dialog = new MessageDialog("Not selected the List", "Oops..!");
+                     await dialog.ShowAsync();
+                 }
+                 else
+                 {
+-                    conn.CreateTable<Assets>();
+-                    var query1 = conn.Table<Assets>();
+-                    var query3 = conn.Query<Assets>("DELETE FROM Assets WHERE AssetName ='" + AccSelection + "'");
+-                    AssetListView.ItemsSource = query1.ToList();
++                    conn.CreateTable<ShoppingList>();
++                    var query1 = conn.Table<ShoppingList>();
++                    var query3 = conn.Query<ShoppingList>("DELETE FROM ShoppingList WHERE ShoppingItemID ='" + listSeleccted + "'");
++                    ShoppingListView.ItemsSource = query1.ToList();
+                 }
+             }
+             catch (NullReferenceException)
+-- 
+2.11.0.windows.1
+
